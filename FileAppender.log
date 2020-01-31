@@ -1,0 +1,20 @@
+2020-01-31 15:41:39,111 [ INFO] - Program was started.
+2020-01-31 15:41:39,195 [ INFO] - Initialization WebSpy...
+2020-01-31 15:41:39,196 [ INFO] - Initialization GUI...
+2020-01-31 15:41:39,314 [ INFO] - Setting up pop-up menu
+2020-01-31 15:41:39,320 [ INFO] - Pop-up menu was set up
+2020-01-31 15:41:39,320 [ INFO] - Setting up pop-up menu
+2020-01-31 15:41:39,321 [ INFO] - Pop-up menu was set up
+2020-01-31 15:41:39,321 [ INFO] - Setting up pop-up menu
+2020-01-31 15:41:39,321 [ INFO] - Pop-up menu was set up
+2020-01-31 15:41:39,464 [ INFO] - GUI was initialized.
+2020-01-31 15:41:39,466 [ INFO] - WebSpy was initialized.
+2020-01-31 15:41:40,803 [ INFO] - Running spider...
+2020-01-31 15:41:40,807 [ INFO] - Initialization spider...
+2020-01-31 15:41:40,807 [ INFO] - Spider was initialized.
+2020-01-31 15:41:40,807 [ INFO] - Start scanning.
+2020-01-31 15:41:40,807 [ INFO] - Scanning website...
+2020-01-31 15:41:45,508 [ INFO] - Start URL is https://conditionservice.com.ua/
+2020-01-31 15:42:06,032 [ INFO] - Parsing page is https://conditionservice.com.ua/invertornye-konditsionery
+2020-01-31 15:42:06,032 [ INFO] - Updating table...
+2020-01-31 15:42:06,057 [ INFO] - Table was updated.
