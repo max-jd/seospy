@@ -12,9 +12,16 @@
         </layout>
     </appender>
 
+
+
     <logger name="webspy.max_jd">
         <level value="INFO"/>
         <appender-ref ref="Logging"/>
     </logger>
+
+    <root>
+        <priority value="OFF"/>
+    </root>
+
 
 </log4j:configuration>

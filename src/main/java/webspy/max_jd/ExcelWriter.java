@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import webspy.max_jd.ExcelWriter;
-
 public class ExcelWriter {
     private static String[] columns = {"#", "URL", "Canonical", "Response", "Title", "Description", "KeyWords", "H1", "Content-Type",
             "Meta-Robots", "Ex. links", "In links", "Out links", "Problem"};
@@ -53,14 +51,13 @@ public class ExcelWriter {
                 newRow.createCell(10).setCellValue("");
 
             String tempStr1 = Arrays.toString(seoUrl.statisticLinksOn.get(seoUrl.getURL()).toArray());
-            //  newRow.createCell(11).setCellValue(tempStr1);
             newRow.createCell(11).setCellValue(tempStr1.substring(1, tempStr1.length()-1)); //delete square braces []
 
             if(seoUrl.statisticLinksOut.get(seoUrl.getURL())!= null) {
                 String tempStr2 = Arrays.toString(seoUrl.statisticLinksOut.get(seoUrl.getURL()).toArray());
-                // newRow.createCell(12).setCellValue(tempStr2);
                 newRow.createCell(12).setCellValue(tempStr2.substring(1, tempStr2.length() - 1)); //delete square braces []
-            }else newRow.createCell(12).setCellValue("");
+            }else
+                newRow.createCell(12).setCellValue("");
 
             newRow.createCell(13).setCellValue(seoUrl.getFlagSeoProblem());
         }
@@ -78,20 +75,21 @@ public class ExcelWriter {
             fileOut = new FileOutputStream(path.toString());
             workbook.write(fileOut);
 
-
-
         }catch(FileNotFoundException ex){
             System.out.println("webspy.max_jd.ExcelWriter" + " writeToFile()" + ex);
             System.out.println(ex); //future logging
+            WebSpy.logToFile.error(ex);
         }catch(IOException ex){
             System.out.println("webspy.max_jd.ExcelWriter" + " writeToFile()" + ex);
             System.out.println(ex);
+            WebSpy.logToFile.error(ex);
         }finally{
             try {
                 fileOut.close();
             }catch(IOException ex){
                 System.out.println("webspy.max_jd.ExcelWriter" + " writeToFile() block finally" + ex);
                 System.out.println(ex); //future logging
+                WebSpy.logToFile.error(ex);
             }
 
             try{
@@ -99,6 +97,7 @@ public class ExcelWriter {
             }catch(IOException ex){
                 System.out.println("webspy.max_jd.ExcelWriter" + " writeToFile() block try - try close workbook" + ex);
                 System.out.println(ex); //future logging
+                WebSpy.logToFile.error(ex);
             }
         }
 

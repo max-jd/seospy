@@ -10,10 +10,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -24,9 +21,6 @@ import java.util.*;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-
-
 
 public class WebSpy extends JFrame{
     private List<URL> pages;
@@ -50,12 +44,6 @@ public class WebSpy extends JFrame{
 
     private volatile StateWebsiteSeoChecker state = StateWebsiteSeoChecker.NOT_RUN_YET;
     private final Object lock = new Object();
-
-    public static void main(String arg[]){
-        logToFile.info("The program was started.");
-        new WebSpy();
-        System.out.print("The program is Ended!");
-    }
 
     private void handleImg(HtmlPage parsingPage){
         DomNodeList<HtmlElement> listImages = parsingPage.getBody().getElementsByTagName("img");
@@ -94,12 +82,11 @@ public class WebSpy extends JFrame{
     private void updateTable(){
         logToFile.info("Updating table...");
         Object[] data = new Object[14];
-        DefaultTableModel m = (DefaultTableModel) mainTable.getModel();
-        m.setRowCount(0);
+        DefaultTableModel tableModel = (DefaultTableModel) mainTable.getModel();
+        tableModel.setRowCount(0);
         int pageNumber = 1;
 
         for(SeoUrl seoUrl : deqSeoUrls){
-
             data[0]  = pageNumber++;
             data[1]  = seoUrl.getURL();
             data[2]  = seoUrl.getCanonical();
@@ -111,26 +98,30 @@ public class WebSpy extends JFrame{
             data[8]  = seoUrl.getContentType();
             data[9]  = seoUrl.getMetarobots();
 
-            if(SeoUrl.externalLinks.get((seoUrl.getURL())) == null)
-                data[10] = 0;
-            else
+            if(SeoUrl.externalLinks.get((seoUrl.getURL())) != null)
                 data[10] = SeoUrl.externalLinks.get((seoUrl.getURL())).size();
+            else
+                data[10] = 0;
 
-            System.out.println(seoUrl.getURL() + " is -11--- " + (SeoUrl.statisticLinksOn.get(seoUrl.getURL()) == null));
-            data[11] = SeoUrl.statisticLinksOn.get(seoUrl.getURL()).size();
-          //  System.out.println("Updating table..." + seoUrl);
-
+            if(SeoUrl.statisticLinksOn.get(seoUrl.getURL()) != null)
+                data[11] = SeoUrl.statisticLinksOn.get(seoUrl.getURL()).size();
+            else {
+                data[11] = -1;
+            }
             /*try{
             Thread.sleep(2000);
             }catch(Exception ex){
                 System.out.println(ex);
             }
 */
-            System.out.println(seoUrl.getURL() + " is -12--- " + (SeoUrl.statisticLinksOut.get(seoUrl.getURL()) == null));
-            //data[12] = webspy.max_jd.SeoUrl.statisticLinksOut.get(seoUrl.getURL()).size();
+            if(SeoUrl.statisticLinksOut.get(seoUrl.getURL()) != null)
+                data[12] = SeoUrl.statisticLinksOut.get(seoUrl.getURL()).size();
+            else
+                data[12] = -1;
+
             data[13] = seoUrl.getFlagSeoProblem().toString();
 
-            m.addRow(data);
+            tableModel.addRow(data);
         }
 
         data = new Object[14];
@@ -143,10 +134,10 @@ public class WebSpy extends JFrame{
             data[11] = SeoUrl.statisticLinksOn.get(seoImage.getURL()).size();
             data[13] = seoImage.getFlagSeoProblem().toString();
 
-            m.addRow(data);
+            tableModel.addRow(data);
         }
 
-        m.fireTableDataChanged();
+        tableModel.fireTableDataChanged();
         mainTable.changeSelection(0,0,false,false);
         logToFile.info("Table was updated.");
     }
@@ -265,10 +256,7 @@ public class WebSpy extends JFrame{
         ImageIcon image = new ImageIcon("C:\\Users\\Maxim\\Downloads\\spider-icon.png");
         setIconImage(image.getImage());
 
-System.out.println(System.getProperty("user.dir"));
-        System.out.println(System.getProperty(System.getProperty("user.dir")) + "\\JAVA\\IdeaProjects\\WebSpy\\src\\main\\resources\\play.png");
-
-                ImageIcon startIcon = new ImageIcon(
+        ImageIcon startIcon = new ImageIcon(
                 new ImageIcon(System.getProperty("user.dir") + "\\src\\main\\resources\\play.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
         ImageIcon pauseIcon = new ImageIcon(
                 new ImageIcon(System.getProperty("user.dir") + "\\src\\main\\resources\\pause.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
@@ -308,7 +296,7 @@ System.out.println(System.getProperty("user.dir"));
         Object[] nameColumns = {"#", "URL", "Canonical", "Response", "Title", "Description", "Keywords",
                 "H1", "Content-Type", "Meta-Robots", "Ex. links", "In links", "Out links", "Problem"};
 
-        JTable table = new JTable(new CustomizedDefaultTableModel(rows, nameColumns)){
+        mainTable = new JTable(new CustomizedDefaultTableModel(rows, nameColumns)){
 
             protected String[] columnToolTips = {null, null, null,null, null, null, null,
                     "Amount of H1 on the page", null, null, "Links to another websites", null, null, null};
@@ -326,24 +314,23 @@ System.out.println(System.getProperty("user.dir"));
                 };
         }};
 
-        table.setAutoCreateRowSorter(true);
+        mainTable.setAutoCreateRowSorter(true);
 
-        table.getTableHeader().setReorderingAllowed(false);
+        mainTable.getTableHeader().setReorderingAllowed(false);
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        table.setFillsViewportHeight(false);
+        JScrollPane scrollPane = new JScrollPane(mainTable);
+        mainTable.setFillsViewportHeight(false);
 
-
-        table.addMouseListener(new MouseAdapter(){
+        mainTable.addMouseListener(new MouseAdapter() {
            @Override
            public void mousePressed(MouseEvent e){
-               if(table.getRowCount() != 0){
+               if(mainTable.getRowCount() != 0){
                    if(e.getClickCount() == 2){
                        Point point =  e.getPoint();
 
-                       int indexView = table.rowAtPoint(point);
-                       String url = (String) table.getModel().getValueAt(
-                               table.convertRowIndexToModel(indexView),1);
+                       int indexView = mainTable.rowAtPoint(point);
+                       String url = (String) mainTable.getModel().getValueAt(
+                               mainTable.convertRowIndexToModel(indexView),1);
                        if(Desktop.isDesktopSupported()){
                            try {
                                Desktop.getDesktop().browse(new URI(url));
@@ -357,13 +344,12 @@ System.out.println(System.getProperty("user.dir"));
                                System.out.format("%s%n%s", "Oops! Something went wrong!", ex);
                            }
                        }
-
                    }
                }
            }
         });
 
-        table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+        mainTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                            boolean hasFocus, int row, int column) {
@@ -382,7 +368,7 @@ System.out.println(System.getProperty("user.dir"));
             }
         });
 
-        table.setDefaultRenderer(Integer.class, new DefaultTableCellRenderer(){
+        mainTable.setDefaultRenderer(Integer.class, new DefaultTableCellRenderer(){
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                            boolean hasFocus, int row, int column){
@@ -400,19 +386,15 @@ System.out.println(System.getProperty("user.dir"));
             }
         });
 
-        table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        mainTable.getColumnModel().getColumn(0).setPreferredWidth(50);
 
-        //need replace in the future
-        mainTable = table;
-
-        JTable tableTabError = new JTable(table.getModel());
+        JTable tableTabError = new JTable(mainTable.getModel());
         tableTabError.setAutoCreateRowSorter(true);
         tableTabError.getTableHeader().setReorderingAllowed(false);
         JTabbedPane tabs = new JTabbedPane();
 
         tableTabError.setDefaultRenderer(Object.class, new ObjectDefaultTableCellRenderer());
         tableTabError.setDefaultRenderer(Integer.class, new IntegerDefaultTableCellRenderer());
-
 
         JScrollPane scrollForTableError = new JScrollPane(tableTabError);
         JPanel errorPanel = new JPanel(new BorderLayout());
@@ -443,7 +425,7 @@ System.out.println(System.getProperty("user.dir"));
         jpFilterTabFirst.add(searchButt);
 
 
-        JTable tableFilterTabResult = new JTable(table.getModel());
+        JTable tableFilterTabResult = new JTable(mainTable.getModel());
         tableFilterTabResult.getTableHeader().setReorderingAllowed(false);
 
         TableRowSorter<DefaultTableModel> sorter =
@@ -493,14 +475,13 @@ System.out.println(System.getProperty("user.dir"));
             String webSiteToParse =
                     //"https://conditioner-service.com.ua/";
                     //"https://tie.com.ua/image/cache/data/2017/12/";
-                    "https://conditionservice.com.ua/";
+                   // "https://conditionservice.com.ua/";
                    // "https://conditioner-service.com.ua/";  //in the future mainPage.getText();
-            //"https://climatbud.com.ua/
+            "https://climatbud.com.ua/";
             validator = new SeoUrlValidator(webSiteToParse,
                     new String[]{"http", "https"}, SeoUrlValidator.ALLOW_2_SLASHES); //in the future mainPage.getText();
             runSpider(webSiteToParse);
         });
-
 
         JPanel scanPanel = new JPanel();
         scanPanel.setName("scanPanel");
@@ -576,31 +557,37 @@ System.out.println(System.getProperty("user.dir"));
             System.out.println("Current index " + tabCurrentIndex);
         });
 
-
         add(tabs);
 
-        setUpPopupMenu(table);
+        setUpPopupMenu(mainTable);
         setUpPopupMenu(tableTabError);
         setUpPopupMenu(tableFilterTabResult);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //add logging when was pushed exit the button
+        this.addWindowListener(new WindowAdapter() {
+            @Override public void windowClosing(WindowEvent event){
+                logToFile.info("The program was closed.");
+            }
+        });
+
         setPreferredSize(new Dimension(800, 800));
         setLocationRelativeTo(null);
         pack();
         setVisible(true);
 
         logToFile.info("GUI was initialized.");
-       // runSpider();
     }
 
     WebSpy(){
-        logToFile.info("Initialization webspy.max_jd.WebSpy...");
+        logToFile.info("The program was started.");
+        logToFile.info("Initialization WebSpy...");
         pages = new java.util.ArrayList<URL>();
         deqSeoUrls = new LinkedList<>();
         tunner = TunnerSeoURL.getTunner();
         imagesSeoUrls = Collections.synchronizedSet(new HashSet<>());
         initGUI();
-        logToFile.info("webspy.max_jd.WebSpy was initialized.");
+        logToFile.info("WebSpy was initialized.");
     }
 
     //create and set up popups menu on a table
@@ -614,7 +601,6 @@ System.out.println(System.getProperty("user.dir"));
 
                 JDialog dialog = new JDialog(WebSpy.this, "Our project", true);
                 dialog.setLayout(new BoxLayout(dialog.getContentPane(), BoxLayout.PAGE_AXIS));
-
 
                 JLabel pageUrlLab, linksOnPageLab, linksFromPageLab, externalLinksLab;
                 pageUrlLab = new JLabel("Page URL:");
@@ -747,7 +733,6 @@ System.out.println(System.getProperty("user.dir"));
     }
 
     private void createConcurrentUpdaterForTable(){
-
         Thread updater = new Thread() {
             @Override
             public void run() {
@@ -763,7 +748,6 @@ System.out.println(System.getProperty("user.dir"));
             }
 
         };
-
         updater.start();
     }
 
@@ -781,7 +765,7 @@ System.out.println(System.getProperty("user.dir"));
         spider.scanMain();
     }
 
-    private void  supplyDataForTable(){
+    private void  supplyDataForTable() {
         Set<String> setOfKeys = SeoUrl.statisticLinksOut.keySet();
         Iterator<String> iterSetKeys = setOfKeys.iterator();
 
@@ -816,8 +800,6 @@ System.out.println(System.getProperty("user.dir"));
 
             logToFile.info("Spider was initialized.");
         }
-
-
 
         void saveToFile(java.nio.file.Path path, java.util.Deque<String> deque){
             logToFile.info("Saving to file" + path);
@@ -919,10 +901,10 @@ System.out.println(System.getProperty("user.dir"));
             System.out.println("parsing url was added to checkedPages: " + parsingPage.getUrl().toString() + " " + wasAdded);
             System.out.println("\ncheckedPage.toString(): " + checkedPages + "\n");
 
-              System.out.println("\nleftPages.toString(): " + leftPages + "\n");
+            System.out.println("\nleftPages.toString(): " + leftPages + "\n");
             boolean isUrlRemoved = leftPages.remove(parsingPage.getUrl().toString());
-              System.out.println("parsing url was removed to leftPage: " + parsingPage.getUrl().toString() + " " + isUrlRemoved);
-              System.out.println("\nleftPages.toString() after deleted: " + leftPages + "\n");
+            System.out.println("parsing url was removed to leftPage: " + parsingPage.getUrl().toString() + " " + isUrlRemoved);
+            System.out.println("\nleftPages.toString() after deleted: " + leftPages + "\n");
 
             String newParseUrl = null;
             if(leftPages.size() != 0)
@@ -945,350 +927,20 @@ System.out.println(System.getProperty("user.dir"));
         }
 
 
-
-        void scan2(){
+        void scanMain() {
             logToFile.info("Scanning website...");
-            if(state == StateWebsiteSeoChecker.NOT_RUN_YET ||
-                    state == StateWebsiteSeoChecker.SCANING_ENDED ||
-                    state == StateWebsiteSeoChecker.STOPPED){
+            if(state == StateWebsiteSeoChecker.NOT_RUN_YET || state == StateWebsiteSeoChecker.SCANING_ENDED ||
+                    state == StateWebsiteSeoChecker.STOPPED) {
+
                 SwingWorker sw = new SwingWorker() {
                     @Override
-                    protected Void doInBackground(){
+                    protected Void doInBackground() {
                         if(state == StateWebsiteSeoChecker.NOT_RUN_YET || state == StateWebsiteSeoChecker.SCANING_ENDED ||
-                                state == StateWebsiteSeoChecker.STOPPED){
-                            state = StateWebsiteSeoChecker.RUNNING;
-
-                            System.out.println("Updating table...");
-                            createConcurrentUpdaterForTable();
-
-                            System.out.println("Start the program");
-                            Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
-
-                            WebClient wc = new WebClient(BrowserVersion.CHROME);
-                            wc.getOptions().setRedirectEnabled(false);
-                            wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
-                            wc.getOptions().setJavaScriptEnabled(false);
-                            // wc.getOptions().setThrowExceptionOnScriptError(false);
-
-
-                            try {
-                                HtmlPage parsingPage = wc.getPage(startingURL);
-                                System.out.println("Start URL is " + startingURL.toString());
-                                logToFile.info("Start URL is " + parsingPage.getUrl().toString());
-                                do{
-                                    ifProgramWasPausedThenWait();
-                                    if(wasProgramStopped())
-                                        return null;
-
-                                    spider.handleImgs(parsingPage);
-
-                                    SeoUrl seoUrlParsingPage = new SeoUrl(parsingPage.getUrl().toString());
-                                    tunner.tunne(seoUrlParsingPage, parsingPage);
-                                    seoUrlParsingPage.analyzeURL();
-
-
-                                    SeoUrl.statisticLinksOut.putIfAbsent(parsingPage.getUrl().toString(), new HashSet<String>());
-
-                                    deqSeoUrls.addFirst(seoUrlParsingPage);
-
-                                    List<HtmlAnchor> anchorsParsingPage = parsingPage.getAnchors();
-                                    for (HtmlAnchor an : anchorsParsingPage) {
-                                        String tempUrl = parsingPage.getFullyQualifiedUrl(an.getHrefAttribute().toString()).toString();
-
-                                        if(deqSeoUrls.contains(tempUrl))
-                                            continue;
-
-                                        //check if tempUrl not equal startingURL without backslash
-                                        if (tempUrl.equals((startingURL.toString()).substring(0, startingURL.toString().length() - 1))){
-                                            System.out.println("Url with out back slash " + tempUrl);
-                                            SeoUrl.statisticLinksOut.putIfAbsent(parsingPage.getUrl().toString(),
-                                                    new HashSet<String>());
-                                            SeoUrl.statisticLinksOut.get(parsingPage.getUrl().toString()).add(tempUrl);
-                                            SeoUrl so = new SeoUrl(tempUrl);
-
-                                            //for determine that on this link someone links
-                                            SeoUrl.statisticLinksOut.putIfAbsent(tempUrl, new HashSet<String>());
-
-                                            HtmlPage parsingPageForSettingSeoUrl = wc.getPage(tempUrl);
-                                            tunner.tunne(so, parsingPageForSettingSeoUrl);
-                                            so.analyzeURL();
-                                            deqSeoUrls.addFirst(so);
-                                            continue;
-                                        }
-
-                                        if (validator.isSchemeHttpOrHttps(tempUrl)) {
-                                            //check if the link lead to external site
-                                            if( ! validator.isSameHost(new URL(tempUrl) )) {
-                                                SeoUrl.externalLinks.putIfAbsent(seoUrlParsingPage.getURL(), new HashSet<String>());
-                                                SeoUrl.externalLinks.get(seoUrlParsingPage.getURL()).add(tempUrl);
-                                                continue;
-                                            }
-
-                                            //check if it is an anchor link, then cutting
-                                            if (validator.havePoundSign(new URL(tempUrl)))
-                                                tempUrl = tempUrl.substring(0, tempUrl.indexOf('#'));
-                                            SeoUrl.statisticLinksOut.get(parsingPage.getUrl().toString()).add(tempUrl);
-
-                                            if( SeoUrl.cacheContentTypePages.get(tempUrl)== null ){
-                                                SeoUrl.cacheContentTypePages.put(tempUrl, validator.getContentType(tempUrl));
-                                            }
-
-                                            //if it is image (or something else) - put a link in the statistics Map and continue. Image (or something else)  can't follow to another page.
-                                            if( ! (SeoUrl.cacheContentTypePages.get(tempUrl).startsWith("text/html") )){
-                                                    if(SeoUrl.cacheContentTypePages.get(tempUrl).startsWith("image/"))
-                                                        spider.handleImgs(tempUrl, parsingPage);
-                                                    else {
-                                                        System.out.println(SeoUrl.cacheContentTypePages.get(tempUrl));
-                                                        SeoUrl.statisticLinksOut.get(parsingPage.getUrl().toString()).add(tempUrl);
-                                                    }
-                                                continue;
-                                            }
-
-
-                                            SeoUrl tempSeoUrl = new SeoUrl(tempUrl);
-                                            if (!(deqSeoUrls.contains(tempSeoUrl))) {
-                                                System.out.print('.');
-                                                deqSeoUrls.addLast(tempSeoUrl);
-                                            }
-                                        }
-                                    }
-                                    String nextUrl = (deqSeoUrls.pollLast()).getURL();
-                                    System.out.println("Parse URL is :" + nextUrl);
-                                    parsingPage = wc.getPage(nextUrl);
-                                    logToFile.info("Parsing page is " + parsingPage.getUrl().toString());
-
-                                    //if(delay != 0){
-                                        // try{
-                                        //    Thread.sleep(delay);
-                                        //}catch(InterruptedException ex){
-                                        //    System.out.println(ex);
-                                        // }
-                                    // }
-
-                                } while (!((startingURL.toString()).equals(parsingPage.getUrl().toString())));
-
-                                //repeat for the start URL and add to the deque
-                                SeoUrl firstPage = new SeoUrl(startingURL.toString());
-                                tunner.tunne(firstPage, parsingPage);
-                                firstPage.analyzeURL();
-                                deqSeoUrls.addFirst(firstPage);
-                            }catch(
-                                    IOException ex) {
-                                logToFile.error(ex.toString());
-                                System.out.println(ex);
-                            }
-
-                            supplyDataForTable();
-
-                            state = StateWebsiteSeoChecker.SCANING_ENDED;
-                            wc.close();
-
-                        }else if(state == StateWebsiteSeoChecker.PAUSED){
-                            state = StateWebsiteSeoChecker.RUNNING;
-                            this.notify();
-                            System.out.println("Updating table...");
-                            createConcurrentUpdaterForTable();
-                        }
-                        return null;
-                    }
-                    @Override
-                    protected void done(){
-                        if(state == StateWebsiteSeoChecker.SCANING_ENDED){
-                            menuMenu.getItem(0).setEnabled(true);// it does exportMenuItem.setEnabled(true);
-                            ((JMenu)(menuMenu.getMenuComponent(1))).getItem(0).setEnabled(true);//it does saveProjectItem.setEnabled(true)
-                            ((JButton)playBar.getComponent(1)).setEnabled(true); // it does playBut.setEnabled(true);
-                            ((JButton)playBar.getComponent(2)).setEnabled(false); // it does pauseBut.setEnabled(false);
-                            ((JButton)playBar.getComponent(3)).setEnabled(false); // it does pauseBut.setEnabled(false);
-
-                            progressBar.setVisible(false);
-                            updateTable();
-                            logToFile.info("The website was scanned.");
-                        }
-                    }
-
-                };
-                sw.execute();
-            }else if(state == StateWebsiteSeoChecker.PAUSED){
-                Runnable runToNotify = new Runnable(){
-                    @Override
-                    public void run(){
-                        System.out.println(Thread.currentThread().getName());
-                        synchronized(lock){
-                            lock.notify();
-                        }
-                    }
-                };
-                new Thread(runToNotify).start();
-            }
-
-        }
-
-
-        void scan(){
-            if(state == StateWebsiteSeoChecker.NOT_RUN_YET ||
-                    state == StateWebsiteSeoChecker.SCANING_ENDED ||
-                    state == StateWebsiteSeoChecker.STOPPED){
-            SwingWorker sw = new SwingWorker() {
-                @Override
-                protected Void doInBackground(){
-                    if(state == StateWebsiteSeoChecker.NOT_RUN_YET || state == StateWebsiteSeoChecker.SCANING_ENDED ||
-                            state == StateWebsiteSeoChecker.STOPPED){
-                        state = StateWebsiteSeoChecker.RUNNING;
-
-                        System.out.println("Start the program");
-                        Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
-
-                        WebClient wc = new WebClient(BrowserVersion.CHROME);
-                        wc.getOptions().setRedirectEnabled(false);
-                        wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
-                        wc.getOptions().setJavaScriptEnabled(false);
-                        // wc.getOptions().setThrowExceptionOnScriptError(false);
-
-
-                        Deque<SeoUrl> d = new LinkedList<>();
-                        deqSeoUrls = d;
-
-                        try {
-                            HtmlPage parsingPage = wc.getPage(startingURL);
-                            System.out.println("Start URL is " + startingURL.toString());
-
-                            do{
-                                    ifProgramWasPausedThenWait();
-                                    if(wasProgramStopped())
-                                        return null;
-
-                                    SeoUrl seoUrlParsingPage = new SeoUrl(parsingPage.getUrl().toString());
-                                    tunner.tunne(seoUrlParsingPage, parsingPage);
-                                    seoUrlParsingPage.analyzeURL();
-                                    SeoUrl.statisticLinksOut.putIfAbsent(parsingPage.getUrl().toString(), new HashSet<String>());
-
-                                    d.addFirst(seoUrlParsingPage);
-
-                                    List<HtmlAnchor> anchorsParsingPage = parsingPage.getAnchors();
-                                    for (HtmlAnchor an : anchorsParsingPage) {
-                                        String tempUrl = parsingPage.getFullyQualifiedUrl(an.getHrefAttribute().toString()).toString();
-
-                                        //check if tempUrl not equal startingURL without backslash
-                                        if (tempUrl.equals((startingURL.toString()).substring(0, startingURL.toString().length() - 1)))
-                                            continue;
-
-                                        if (tempUrl.startsWith("http")) {
-                                            //check if the link lead to external site
-                                            if (!(new URL(tempUrl).getHost().equals(startingURL.getHost()))) {
-                                               /// seoUrlParsingPage.addExternalLinks(tempUrl.toString()); was deleted, now it is a static field
-                                                continue;
-                                            }
-
-                                            //check if it is an anchor link, then cutting
-                                            if ((tempUrl.contains("#")))
-                                                tempUrl = tempUrl.substring(0, tempUrl.indexOf('#'));
-
-                                            // webspy.max_jd.SeoUrl.statisticLinksOut.putIfAbsent(parsingPage.getUrl().toString(), new HashSet<String>());
-                                            SeoUrl.statisticLinksOut.get(parsingPage.getUrl().toString()).add(tempUrl);
-
-                                            SeoUrl tempSeoUrl = new SeoUrl(tempUrl);
-                                            if (!(d.contains(tempSeoUrl))) {
-                                                System.out.print('.');
-                                                d.addLast(tempSeoUrl);
-                                            }
-                                        }
-                                    }
-                                        String nextUrl = (d.pollLast()).getURL();
-                                        System.out.println("Parse URL is :" + nextUrl);
-                                        parsingPage = wc.getPage(nextUrl);
-
-                                        //try{
-                                        //    Thread.sleep(1000);
-                                        //}catch(InterruptedException ex){
-                                        //    System.out.println(ex);
-                                        // }
-
-                                    } while (!((startingURL.toString()).equals(parsingPage.getUrl().toString())));
-
-                                    //repeat for the start URL and add to the deque
-                                    SeoUrl firstPage = new SeoUrl(startingURL.toString());
-                                    tunner.tunne(firstPage, parsingPage);
-                                    firstPage.analyzeURL();
-                                    d.addFirst(firstPage);
-                                }catch(
-                                IOException ex) {
-                                    System.out.println(ex);
-                                }
-
-                                Set<String> setOfKey = SeoUrl.statisticLinksOut.keySet();
-                                Iterator<String> iterSetKey = setOfKey.iterator();
-
-                            while(iterSetKey.hasNext()) {
-                                SeoUrl.statisticLinksOn.put(iterSetKey.next(), new HashSet<String>());
-                            }
-
-                            Iterator<Map.Entry<String, HashSet<String>>> iterEntryLinksOn = SeoUrl.statisticLinksOn.entrySet().iterator();
-
-                        while(iterEntryLinksOn.hasNext()) {
-                                Map.Entry<String, HashSet<String>> entryLinksOn = iterEntryLinksOn.next();
-
-                                for (Map.Entry<String, HashSet<String>> entryTracking : SeoUrl.statisticLinksOut.entrySet()) {
-                                    // if one page refers to this page, then we make a mark in webspy.max_jd.SeoUrl.statisticLinksOn, that
-                                    // it refers to this one
-                                    if (entryTracking.getValue().contains(entryLinksOn.getKey()))
-                                        entryLinksOn.getValue().add(entryTracking.getKey());
-                                }
-                        }
-
-                        state = StateWebsiteSeoChecker.SCANING_ENDED;
-                        wc.close();
-
-                    }else if(state == StateWebsiteSeoChecker.PAUSED){
-                        state = StateWebsiteSeoChecker.RUNNING;
-                        this.notify();
-                    }
-                        return null;
-                }
-                @Override
-                protected void done(){
-                    if(state == StateWebsiteSeoChecker.SCANING_ENDED){
-                        menuMenu.getItem(0).setEnabled(true);// it does exportMenuItem.setEnabled(true);
-                        ((JMenu)(menuMenu.getMenuComponent(1))).getItem(0).setEnabled(true);//it does saveProjectItem.setEnabled(true)
-                        ((JButton)playBar.getComponent(1)).setEnabled(true); // it does playBut.setEnabled(true);
-                        ((JButton)playBar.getComponent(2)).setEnabled(false); // it does pauseBut.setEnabled(false);
-                        ((JButton)playBar.getComponent(3)).setEnabled(false); // it does pauseBut.setEnabled(false);
-
-                        progressBar.setVisible(false);
-                        updateTable();
-                    }
-                }
-
-            };
-                sw.execute();
-            }else if(state == StateWebsiteSeoChecker.PAUSED){
-                   Runnable runToNotify = new Runnable(){
-                    @Override
-                            public void run(){
-                                System.out.println(Thread.currentThread().getName());
-                                synchronized(lock){
-                                    lock.notify();
-                                }
-                    }
-                   };
-                   new Thread(runToNotify).start();
-                }
-
-        }
-
-        void scanMain(){
-            logToFile.info("Scanning website...");
-            if(state == StateWebsiteSeoChecker.NOT_RUN_YET ||
-                    state == StateWebsiteSeoChecker.SCANING_ENDED ||
-                    state == StateWebsiteSeoChecker.STOPPED){
-                SwingWorker sw = new SwingWorker() {
-                    @Override
-                    protected Void doInBackground(){
-                        if(state == StateWebsiteSeoChecker.NOT_RUN_YET || state == StateWebsiteSeoChecker.SCANING_ENDED ||
-                                state == StateWebsiteSeoChecker.STOPPED){
+                                state == StateWebsiteSeoChecker.STOPPED) {
                             state = StateWebsiteSeoChecker.RUNNING;
 
                             System.out.println("Create a thread for updating table...");
-                            //createConcurrentUpdaterForTable();
+                            createConcurrentUpdaterForTable();
 
                             System.out.println("Start the program");
                             Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
@@ -1299,53 +951,56 @@ System.out.println(System.getProperty("user.dir"));
                             wc.getOptions().setJavaScriptEnabled(false);
                             // wc.getOptions().setThrowExceptionOnScriptError(false);
 
-
                             try {
-                                HtmlPage parsingPage = wc.getPage(startingURL);
-                                System.out.println("Start URL is " + startingURL.toString());
-                                logToFile.info("Start URL is " + parsingPage.getUrl().toString());
-                                do{
+                                HtmlPage parsingHtmlPage = wc.getPage(startingURL);
+                                System.out.println("Starting URL is " + startingURL.toString());
+                                logToFile.info("Starting URL is " + parsingHtmlPage.getUrl().toString());
+                                SeoUrl.statisticLinksOut.put(parsingHtmlPage.getUrl().toString(), new HashSet<String>());
+                                SeoUrl.cacheContentTypePages.put(parsingHtmlPage.getUrl().toString(), validator.getContentType(parsingHtmlPage.getUrl().toString()));
+                                System.out.println(parsingHtmlPage.getUrl().toString());
+                                do {
                                     ifProgramWasPausedThenWait();
                                     if(wasProgramStopped())
                                         return null;
 
-                                    spider.handleImgs(parsingPage);
+                                    spider.handleImages(parsingHtmlPage);
 
-                                    SeoUrl seoUrlParsingPage = new SeoUrl(parsingPage.getUrl().toString());
-                                    tunner.tunne(seoUrlParsingPage, parsingPage);
-                                    seoUrlParsingPage.analyzeURL();
-                                    SeoUrl.statisticLinksOut.putIfAbsent(parsingPage.getUrl().toString(), new HashSet<String>());
+                                    SeoUrl seoUrlForParsingPage = new SeoUrl(parsingHtmlPage.getUrl().toString());
+                                    tunner.tunne(seoUrlForParsingPage, parsingHtmlPage);
+                                    seoUrlForParsingPage.analyzeURL();
 
-                                    deqSeoUrls.addFirst(seoUrlParsingPage);
+                                    deqSeoUrls.addFirst(seoUrlForParsingPage);
 
-                                    List<HtmlAnchor> anchorsParsingPage = parsingPage.getAnchors();
+                                    List<HtmlAnchor> anchorsParsingPage = parsingHtmlPage.getAnchors();
                                     for (HtmlAnchor an : anchorsParsingPage) {
-                                        String tempUrl = parsingPage.getFullyQualifiedUrl(an.getHrefAttribute().toString()).toString();
+                                        String tempUrl = parsingHtmlPage.getFullyQualifiedUrl(an.getHrefAttribute().toString()).toString();
 
-                                        if(deqSeoUrls.contains(tempUrl))
+                                        if(deqSeoUrls.contains(new SeoUrl(tempUrl)))
                                             continue;
 
                                         //check to see if tempUrl not equal startingURL without backslash
                                         if (tempUrl.equals((startingURL.toString()).substring(0, startingURL.toString().length() - 1))){
-
-                                            SeoUrl.statisticLinksOut.putIfAbsent(parsingPage.getUrl().toString(), new HashSet<String>());
-                                            SeoUrl.statisticLinksOut.get(parsingPage.getUrl().toString()).add(tempUrl.toString());
+                                            //add statistics
+                                            SeoUrl.statisticLinksOut.putIfAbsent(parsingHtmlPage.getUrl().toString(), new HashSet<String>());
+                                            SeoUrl.statisticLinksOut.get(parsingHtmlPage.getUrl().toString()).add(tempUrl.toString());
                                             SeoUrl.statisticLinksOn.putIfAbsent(tempUrl.toString(), new HashSet<String>());
-                                            SeoUrl.statisticLinksOn.get(tempUrl.toString()).add(parsingPage.getUrl().toString());
+                                            SeoUrl.statisticLinksOn.get(tempUrl.toString()).add(parsingHtmlPage.getUrl().toString());
+                                            SeoUrl.cacheContentTypePages.put(tempUrl, validator.getContentType(tempUrl));
 
-                                            SeoUrl so = new SeoUrl(tempUrl);
-                                            HtmlPage parsingPageForSettingSeoUrl = wc.getPage(tempUrl);
-                                            tunner.tunne(so, parsingPageForSettingSeoUrl);
-                                            so.analyzeURL();
-                                            deqSeoUrls.addFirst(so);
+                                            SeoUrl newSeoUrl = new SeoUrl(tempUrl);
+                                            HtmlPage parsingPageForSettingNewSeoUrl = wc.getPage(tempUrl);
+                                            tunner.tunne(newSeoUrl, parsingPageForSettingNewSeoUrl);
+                                            newSeoUrl.analyzeURL();
+                                            deqSeoUrls.addFirst(newSeoUrl);
                                             continue;
                                         }
 
                                         if (validator.isSchemeHttpOrHttps(tempUrl)) {
                                             //check if the link lead to external site
-                                            if( ! validator.isSameHost(new URL(tempUrl) )) {
-                                                SeoUrl.externalLinks.putIfAbsent(seoUrlParsingPage.getURL(), new HashSet<String>());
-                                                SeoUrl.externalLinks.get(seoUrlParsingPage.getURL()).add(tempUrl);
+                                            if(! validator.isSameHost(new URL(tempUrl) )) {
+                                                //if it is, then add it for statistics and continue for new parsing page
+                                                SeoUrl.externalLinks.putIfAbsent(seoUrlForParsingPage.getURL(), new HashSet<String>());
+                                                SeoUrl.externalLinks.get(seoUrlForParsingPage.getURL()).add(tempUrl);
                                                 continue;
                                             }
 
@@ -1353,41 +1008,43 @@ System.out.println(System.getProperty("user.dir"));
                                             if (validator.havePoundSign(new URL(tempUrl)))
                                                 tempUrl = tempUrl.substring(0, tempUrl.indexOf('#'));
 
-
-                                            //need to delete
-                                           // webspy.max_jd.SeoUrl.statisticLinksOut.get(parsingPage.getUrl().toString()).add(tempUrl);
-                                           // webspy.max_jd.SeoUrl.statisticLinksOn.putIfAbsent(tempUrl.toString(), new HashSet<String>());
-                                          //  webspy.max_jd.SeoUrl.statisticLinksOn.get(tempUrl.toString()).add(parsingPage.toString());
-
-
+                                            //caching if it is a new page
                                             SeoUrl.cacheContentTypePages.putIfAbsent(tempUrl, validator.getContentType(tempUrl));
-
 
                                             //if it is an image (or something else) - put a link in the statistics Map and continue.
                                             // An image (or something else)  can't refer to another page.
-                                            if( ! (SeoUrl.cacheContentTypePages.get(tempUrl).startsWith("text/html") )){
+                                            if(! (SeoUrl.cacheContentTypePages.get(tempUrl).startsWith("text/html") )) {
                                                 if(SeoUrl.cacheContentTypePages.get(tempUrl).startsWith("image/"))
-                                                    spider.handleImgs(tempUrl, parsingPage);
+                                                    spider.handleImageFormHtmlTagA(tempUrl, parsingHtmlPage);
                                                 continue;
                                             }
 
-
-                                            SeoUrl.statisticLinksOut.get(parsingPage.getUrl().toString()).add(tempUrl);
+                                            SeoUrl.statisticLinksOut.putIfAbsent(parsingHtmlPage.getUrl().toString(), new HashSet<String>());
+                                            SeoUrl.statisticLinksOut.get(parsingHtmlPage.getUrl().toString()).add(tempUrl);
                                             SeoUrl.statisticLinksOn.putIfAbsent(tempUrl.toString(), new HashSet<String>());
-                                            SeoUrl.statisticLinksOn.get(tempUrl.toString()).add(parsingPage.toString());
-
+                                            SeoUrl.statisticLinksOn.get(tempUrl.toString()).add(parsingHtmlPage.toString());
 
                                             SeoUrl tempSeoUrl = new SeoUrl(tempUrl);
-                                            if (!(deqSeoUrls.contains(tempSeoUrl))) {
+                                            if (! (deqSeoUrls.contains(tempSeoUrl))) {
                                                 System.out.print('.');
+                                                logToFile.info("Adding new URL for scanning: " + tempSeoUrl.toString());
                                                 deqSeoUrls.addLast(tempSeoUrl);
                                             }
                                         }
                                     }
-                                    String nextUrl = (deqSeoUrls.pollLast()).getURL();
-                                    System.out.println("Parse URL is :" + nextUrl);
-                                    parsingPage = wc.getPage(nextUrl);
-                                    logToFile.info("Parsing page is " + parsingPage.getUrl().toString());
+
+
+
+                                    //if next url equals to starting url, then the site was parsed
+                                    if(deqSeoUrls.peekLast().toString().equals(startingURL.toString())) {
+                                        break;
+                                    } else {
+                                        // else get next URL
+                                        String nextUrl = (deqSeoUrls.pollLast()).getURL();
+                                        System.out.println("Parse URL is :" + nextUrl);
+                                        parsingHtmlPage = wc.getPage(nextUrl);
+                                        logToFile.info("New parsing page is " + parsingHtmlPage.getUrl().toString());
+                                    }
 
                                     //if(delay != 0){
                                     // try{
@@ -1396,14 +1053,13 @@ System.out.println(System.getProperty("user.dir"));
                                     //    System.out.println(ex);
                                     // }
                                     // }
-                                    updateTable();
-                                } while (!((startingURL.toString()).equals(parsingPage.getUrl().toString())));
+                                } while (true);
 
                                 //repeat for the start URL and add to the deque
-                                SeoUrl firstPage = new SeoUrl(startingURL.toString());
-                                tunner.tunne(firstPage, parsingPage);
+                                /*SeoUrl firstPage = new SeoUrl(startingURL.toString());
+                                tunner.tunne(firstPage, parsingHtmlPage);
                                 firstPage.analyzeURL();
-                                deqSeoUrls.addFirst(firstPage);
+                                deqSeoUrls.addFirst(firstPage);*/
                             }catch(
                                     IOException ex) {
                                 logToFile.error(ex.toString());
@@ -1442,7 +1098,6 @@ System.out.println(System.getProperty("user.dir"));
                 Runnable runToNotify = new Runnable(){
                     @Override
                     public void run(){
-                        System.out.println(Thread.currentThread().getName());
                         synchronized(lock){
                             lock.notify();
                         }
@@ -1453,46 +1108,42 @@ System.out.println(System.getProperty("user.dir"));
 
         }
 
-
-        private void handleImgs(String imageFromTagA, HtmlPage page){
-            SeoUrl urlToImage = new SeoUrl(imageFromTagA, true);
+        private void handleImageFormHtmlTagA(String imageFromTagA, HtmlPage page){
+            SeoUrl suToImage = new SeoUrl(imageFromTagA, true);
             SeoUrl.cacheContentTypePages.putIfAbsent(imageFromTagA, validator.getContentType(imageFromTagA));
-            TunnerSeoURL tunner = TunnerSeoURL.getTunner();
-            tunner.tunne(urlToImage, page);
-            urlToImage.analyzeURL();
+            tunner.tunne(suToImage, page);
+            suToImage.analyzeURL();
 
-            imagesSeoUrls.add(urlToImage);
             SeoUrl.statisticLinksOut.putIfAbsent(page.getUrl().toString(), new HashSet<String>());
             SeoUrl.statisticLinksOut.get(page.getUrl().toString()).add(imageFromTagA);
-            SeoUrl.statisticLinksOn.putIfAbsent(urlToImage.toString(), new HashSet<String>());
-            SeoUrl.statisticLinksOn.get(page.getUrl().toString()).add(page.getUrl().toString());
+            SeoUrl.statisticLinksOn.putIfAbsent(suToImage.toString(), new HashSet<String>());
+            SeoUrl.statisticLinksOn.get(suToImage.toString()).add(page.getUrl().toString());
+
+            imagesSeoUrls.add(suToImage);
         }
 
-        private void handleImgs(HtmlPage parsingPage){
+        private void handleImages(HtmlPage parsingPage){
             DomNodeList<HtmlElement> listImages = parsingPage.getBody().getElementsByTagName("img");
             Set<String> setOfImage = new HashSet();
 
-            for(HtmlElement el :listImages){
+            for(HtmlElement el : listImages){
                 String src = el.getAttribute("src");
-                try{
+                try {
                     String qualifiedUrl = parsingPage.getFullyQualifiedUrl(src).toString();
                     setOfImage.add(qualifiedUrl);
 
                     SeoUrl.cacheContentTypePages.putIfAbsent(qualifiedUrl, validator.getContentType(qualifiedUrl));
-
-                }catch(MalformedURLException ex){
+                } catch(MalformedURLException ex){
                     System.out.println(ex);
                 }
             }
 
-            TunnerSeoURL tuner = TunnerSeoURL.getTunner();
-
             for(String ordinaryUrlOfImage : setOfImage){
                 SeoUrl seoUrl = new SeoUrl(ordinaryUrlOfImage, true);
-                tuner.tunne(seoUrl, parsingPage);
+                tunner.tunne(seoUrl, parsingPage);
                 seoUrl.analyzeURL();
 
-                seoUrl.statisticLinksOut.putIfAbsent(parsingPage.getUrl().toString(), new HashSet<>());
+                seoUrl.statisticLinksOut.putIfAbsent(parsingPage.getUrl().toString(), new HashSet<String>());
                 seoUrl.statisticLinksOut.get(parsingPage.getUrl().toString()).add(seoUrl.toString());
                 SeoUrl.statisticLinksOn.putIfAbsent(seoUrl.toString(), new HashSet<String>());
                 SeoUrl.statisticLinksOn.get(seoUrl.toString()).add(parsingPage.getUrl().toString());
@@ -1506,8 +1157,10 @@ System.out.println(System.getProperty("user.dir"));
         synchronized(lock){
             while(state == StateWebsiteSeoChecker.PAUSED){
                 try{
+                    WebSpy.logToFile.info("Thread for scanning was stopped.");
                     lock.wait();
                     System.out.println("Woke up");
+                    WebSpy.logToFile.info("Thread for scanning was woke up.");
                     state = StateWebsiteSeoChecker.RUNNING;
                 }catch(InterruptedException ex){
                     logToFile.error(ex.toString());
