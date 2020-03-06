@@ -38,6 +38,12 @@ public class WebSpy extends JFrame{
     private JMenu menuMenu;
     private JPanel playBar;
     private JTable mainTable;
+    private JTabbedPane tabs = new JTabbedPane();
+    private JButton playBut;
+    private JButton pauseBut;
+    private JButton stopBut;
+    private JMenuItem saveProjectItem;
+    JMenuItem exportMenuItem;
 
     //need for transfer top menu among tabs. equals 0 by default
     private int tabPreviousIndex;
@@ -47,41 +53,30 @@ public class WebSpy extends JFrame{
     private final Object lock = new Object();
 
     private void createMenuBar(){
-
-    }
-
-
-    public void initGUI(){
-        logToFile.info("Initialization GUI...");
-        setName("SEOSpy");
-
         JMenuBar menuBar = new JMenuBar();
         menuMenu = new JMenu("Menu");
-
         JMenu saveLoadProjSubMenu = new JMenu("Project...");
-        JMenuItem saveProjectItem = new JMenuItem("Save");
+        saveProjectItem = new JMenuItem("Save");
         saveProjectItem.setEnabled(false);
         JMenuItem loadProjectItem = new JMenuItem("Load");
         saveLoadProjSubMenu.add(saveProjectItem);
         saveLoadProjSubMenu.add(loadProjectItem);
-
         saveProjectItem.addActionListener((e) -> saveProject());
         loadProjectItem.addActionListener((e) -> loadProject());
 
-        JMenuItem exportMenuItem = new JMenuItem("Export to excel");
+        exportMenuItem = new JMenuItem("Export to excel");
         exportMenuItem.setEnabled(false);
-        exportMenuItem.addActionListener( (actionEvent) -> {
-            System.out.println("Export to excel was pressed");
 
-            //do 2 array to combine 2 collection
+        //export a table to a xlsx file
+        exportMenuItem.addActionListener( (actionEvent) -> {
+            //making 2 array to combine 2 collection of seoUrls and Images
             SeoUrl[] arraySeoUrls = new SeoUrl[deqSeoUrls.size()];
             deqSeoUrls.toArray(arraySeoUrls);
             SeoUrl[] arraySeoImages = new SeoUrl[imagesSeoUrls.size()];
             imagesSeoUrls.toArray(arraySeoImages);
 
-
             SeoUrl[] arraySeoUrlsAndImages = ArrayUtils.addAll(arraySeoUrls,arraySeoImages);
-            ExcelWriter.writeToFile(Paths.get("E:\\report.xlsx"),arraySeoUrlsAndImages);
+            ExcelWriter.writeToFile(Paths.get(System.getProperty("user.dir") + "report.xlsx"),arraySeoUrlsAndImages);
         });
 
         menuMenu.add(exportMenuItem);
@@ -92,8 +87,8 @@ public class WebSpy extends JFrame{
         JMenu helpMenu = new JMenu("Help");
         JMenuItem supportMenuItem = new JMenuItem("Support");
         supportMenuItem.addActionListener((actionEvent) -> {
-            JOptionPane.showMessageDialog(WebSpy.this, "To contact " +
-                            "with me\t\n write to here juncpp@gmail.com", "Support",
+            JOptionPane.showMessageDialog(WebSpy.this, "To contact with me" + System.lineSeparator()
+                            + "write to here pavlinich.maxim@gmail.com", "Support",
                     JOptionPane.PLAIN_MESSAGE);
         });
 
@@ -101,23 +96,33 @@ public class WebSpy extends JFrame{
         menuBar.add(helpMenu);
 
         setJMenuBar(menuBar);
+    }
 
-        ImageIcon image = new ImageIcon("C:\\Users\\Maxim\\Downloads\\spider-icon.png");
-        setIconImage(image.getImage());
-
+    private void createButtons() {
+        //getting images
         ImageIcon startIcon = new ImageIcon(
-                new ImageIcon(System.getProperty("user.dir") + "\\src\\main\\resources\\play.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
+                new ImageIcon(System.getProperty("user.dir") +  File.separator + "src" + File.separator + "main"
+                        + File.separator + "resources" + File.separator + "play.png")
+                        .getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
         ImageIcon pauseIcon = new ImageIcon(
-                new ImageIcon(System.getProperty("user.dir") + "\\src\\main\\resources\\pause.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
+                new ImageIcon(System.getProperty("user.dir") + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator+ "pause.png")
+                        .getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
         ImageIcon stopIcon = new ImageIcon(
-                new ImageIcon(System.getProperty("user.dir") + "\\src\\main\\resources\\stop.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
+                new ImageIcon(System.getProperty("user.dir") + File.separator + "src" + File.separator + "main"
+                        + File.separator + "resources" + File.separator + "stop.png").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT));
 
-        JButton playBut = new  JButton(startIcon);
-        JButton pauseBut = new  JButton(pauseIcon);
+        ImageIcon image = new ImageIcon(System.getProperty("user.dir") + File.separator + "src" + File.separator + "main" + File.separator
+                + "resources" + File.separator + "spider.png");
+        setIconImage(image.getImage());
+        System.out.println(image);
+        //create buttons
+        playBut = new  JButton(startIcon);
+        pauseBut = new  JButton(pauseIcon);
         pauseBut.setName("Pause Button");
-        JButton stopBut  = new  JButton(stopIcon);
+        stopBut = new JButton(stopIcon);
         stopBut.setName("Stop Button");
 
+        //setting buttons
         pauseBut.setEnabled(false);
         stopBut.setEnabled(false);
 
@@ -140,12 +145,31 @@ public class WebSpy extends JFrame{
             exportMenuItem.setEnabled(true);
         });
 
+        playBut.addActionListener((actionEvent)-> {
+            progressBar.setVisible(true);
+            pauseBut.setEnabled(true);
+            stopBut.setEnabled(true);
+            playBut.setEnabled(false);
+            String webSiteToParse =
 
-        Object[][] rows = {};
+                    //"https://tie.com.ua/image/cache/data/2017/12/";
+                    "https://conditionservice.com.ua/";
+            // "https://conditioner-service.com.ua/";  //in the future mainPage.getText();
+            //"https://climatbud.com.ua/";
+            validator = new SeoUrlValidator(webSiteToParse,
+                    new String[]{"http", "https"}, SeoUrlValidator.ALLOW_2_SLASHES); //in the future mainPage.getText();
+            runSpider(webSiteToParse);
+        });
+    }
+
+    private Object[] createColumnsByNames() {
         Object[] nameColumns = {"#", "URL", "Canonical", "Response", "Title", "Description", "Keywords",
                 "H1", "Content-Type", "Meta-Robots", "Ex. links", "In links", "Out links", "Problem"};
+        return nameColumns;
+    }
 
-        mainTable = new JTable(new CustomizedDefaultTableModel(rows, nameColumns)){
+    private void createMainTable( Object[][] rows, Object[] nameColumns){
+       mainTable = new JTable(new CustomizedDefaultTableModel(rows, nameColumns)){
 
             protected String[] columnToolTips = {null, null, null,null, null, null, null,
                     "Amount of H1 on the page", null, null, "Links to another websites", null, null, null};
@@ -162,7 +186,9 @@ public class WebSpy extends JFrame{
                     }
                 };
             }};
+    }
 
+    private void settingMainTable(){
         mainTable.setAutoCreateRowSorter(true);
 
         mainTable.getTableHeader().setReorderingAllowed(false);
@@ -236,22 +262,28 @@ public class WebSpy extends JFrame{
         });
 
         mainTable.getColumnModel().getColumn(0).setPreferredWidth(50);
+    }
 
+    private JTable createAndGetTabErrorTable(){
         JTable tableTabError = new JTable(mainTable.getModel());
         tableTabError.setAutoCreateRowSorter(true);
         tableTabError.getTableHeader().setReorderingAllowed(false);
-        JTabbedPane tabs = new JTabbedPane();
 
         tableTabError.setDefaultRenderer(Object.class, new ObjectDefaultTableCellRenderer());
         tableTabError.setDefaultRenderer(Integer.class, new IntegerDefaultTableCellRenderer());
 
         JScrollPane scrollForTableError = new JScrollPane(tableTabError);
-        JPanel errorPanel = new JPanel(new BorderLayout());
-        errorPanel.add(scrollForTableError, BorderLayout.CENTER);
+        return tableTabError;
+    }
 
+    private JPanel createFirstFilterTab(){
         JPanel jpFilterTabFirst = new JPanel();
-        JTable tableFilterTab = new JTable();
         jpFilterTabFirst.setLayout(new FlowLayout(FlowLayout.LEFT));
+        return jpFilterTabFirst;
+    }
+
+    private void settingFirstFilterTab(JTable tableFilterTabResult, JPanel jpFilterTabFirst){
+        JTable tableFilterTab = new JTable();
 
         DefaultTableModel modelForFilter = new DefaultTableModel(new Object[]{
                 "URL", "Canonical", "Response", "Title", "Description", "Keywords","H1", "MetaRobots"}, 1);
@@ -273,8 +305,6 @@ public class WebSpy extends JFrame{
 
         jpFilterTabFirst.add(searchButt);
 
-
-        JTable tableFilterTabResult = new JTable(mainTable.getModel());
         tableFilterTabResult.getTableHeader().setReorderingAllowed(false);
 
         TableRowSorter<DefaultTableModel> sorter =
@@ -282,7 +312,6 @@ public class WebSpy extends JFrame{
         tableFilterTabResult.setRowSorter(sorter);
 
         searchButt.addActionListener((actionEvent)-> {
-            System.out.println("Search was pressed!");
             if(tableFilterTab.isEditing())
                 tableFilterTab.getCellEditor().stopCellEditing();
 
@@ -304,6 +333,35 @@ public class WebSpy extends JFrame{
             }
             tableFilterTabResult.changeSelection(0,0, false, false);
         });
+    }
+
+    void createTabs(){
+        
+    }
+    //this - inherited methods
+    public void initGUI(){
+        logToFile.info("Initialization GUI...");
+        this.setName("SEOSpy");
+
+        createMenuBar();
+        createButtons();
+
+        Object[][] rows = {};
+        Object[] nameColumns = createColumnsByNames();
+        createMainTable(rows, nameColumns);
+        settingMainTable();
+
+        JTable tableTabError = createAndGetTabErrorTable();
+
+        JPanel errorPanel = new JPanel(new BorderLayout());
+        //get JScrollPane from tableTabError
+        errorPanel.add( ((JScrollPane)((JViewport)tableTabError.getParent()).getParent()), BorderLayout.CENTER);
+
+        JPanel jpFilterTabFirst = createFirstFilterTab();
+
+        //create JTable for searching
+        JTable tableFilterTabResult = new JTable(mainTable.getModel());
+        settingFirstFilterTab(tableFilterTabResult, jpFilterTabFirst);
 
         JPanel filterPanel = new JPanel(new BorderLayout());
         JPanel innerPanel = new JPanel();
@@ -316,21 +374,7 @@ public class WebSpy extends JFrame{
         JTextField mainPage = new JTextField(); //?? why we need this?
         mainPage.setPreferredSize(new Dimension(200, 24));
 
-        playBut.addActionListener((actionEvent)-> {
-            progressBar.setVisible(true);
-            pauseBut.setEnabled(true);
-            stopBut.setEnabled(true);
-            playBut.setEnabled(false);
-            String webSiteToParse =
 
-                    //"https://tie.com.ua/image/cache/data/2017/12/";
-                    "https://conditionservice.com.ua/";
-            // "https://conditioner-service.com.ua/";  //in the future mainPage.getText();
-            //"https://climatbud.com.ua/";
-            validator = new SeoUrlValidator(webSiteToParse,
-                    new String[]{"http", "https"}, SeoUrlValidator.ALLOW_2_SLASHES); //in the future mainPage.getText();
-            runSpider(webSiteToParse);
-        });
 
         JPanel scanPanel = new JPanel();
         scanPanel.setName("scanPanel");
@@ -359,7 +403,7 @@ public class WebSpy extends JFrame{
         gbc.anchor = GridBagConstraints.FIRST_LINE_END;
         topPanel.add(innerPan2, gbc);
 
-        scanPanel.add(scrollPane, BorderLayout.CENTER);
+        scanPanel.add(((JScrollPane)((JViewport)mainTable.getParent()).getParent()), BorderLayout.CENTER);
         scanPanel.add(topPanel, BorderLayout.NORTH);
 
         tabs.addTab("Scan", scanPanel);
@@ -406,11 +450,19 @@ public class WebSpy extends JFrame{
             System.out.println("Current index " + tabCurrentIndex);
         });
 
+
+
+
+
         add(tabs);
+
+
 
         setUpPopupMenu(mainTable);
         setUpPopupMenu(tableTabError);
         setUpPopupMenu(tableFilterTabResult);
+
+
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //add logging when was pushed exit the button
