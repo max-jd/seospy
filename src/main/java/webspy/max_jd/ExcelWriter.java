@@ -9,20 +9,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 public class ExcelWriter {
-    private static String[] columns = {"#", "URL", "Canonical", "Response", "Title", "Description", "KeyWords", "H1", "Content-Type",
+    private static String[] nameColumns = {"#", "URL", "Canonical", "Response", "Title", "Description", "KeyWords", "H1", "Content-Type",
             "Meta-Robots", "Ex. links", "In links", "Out links", "Problem"};
 
     public static void writeToFile(java.nio.file.Path path, SeoUrl[] arraySeoUrls){
-
         Workbook workbook = new XSSFWorkbook();
-
         Sheet sheet = workbook.createSheet();
-
         Row headerRow = sheet.createRow(0);
 
-        for(int i = 0; i < columns.length; i++){
+        for(int i = 0; i < nameColumns.length; i++){
             Cell cell = headerRow.createCell(i);
-            cell.setCellValue(columns[i]);
+            cell.setCellValue(nameColumns[i]);
         }
 
         int rowNum = 1;
@@ -62,7 +59,7 @@ public class ExcelWriter {
             newRow.createCell(13).setCellValue(seoUrl.getFlagSeoProblem());
         }
 
-        for(int i = 0; i > columns.length; i++){
+        for(int i = 0; i > nameColumns.length; i++){
         sheet.autoSizeColumn(i);
         }
 
