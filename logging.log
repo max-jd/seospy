@@ -1,88 +1,96 @@
-2020-03-06 16:32:40,150 [ INFO] - The program was started.
-2020-03-06 16:32:40,152 [ INFO] - Initialization WebSpy...
-2020-03-06 16:32:40,152 [ INFO] - Initialization GUI...
-2020-03-06 16:32:40,468 [ INFO] - Setting up pop-up menu
-2020-03-06 16:32:40,476 [ INFO] - Pop-up menu was set up
-2020-03-06 16:32:40,477 [ INFO] - Setting up pop-up menu
-2020-03-06 16:32:40,479 [ INFO] - Pop-up menu was set up
-2020-03-06 16:32:40,479 [ INFO] - Setting up pop-up menu
-2020-03-06 16:32:40,483 [ INFO] - Pop-up menu was set up
-2020-03-06 16:32:40,717 [ INFO] - GUI was initialized.
-2020-03-06 16:32:40,717 [ INFO] - WebSpy was initialized.
-2020-03-06 16:32:42,158 [ INFO] - Running spider...
-2020-03-06 16:32:42,162 [ INFO] - Initialization spider...
-2020-03-06 16:32:42,162 [ INFO] - Spider was initialized.
-2020-03-06 16:32:42,162 [ INFO] - Start scanning.
-2020-03-06 16:32:42,162 [ INFO] - Scanning website...
-2020-03-06 16:32:42,278 [ INFO] - Updating table...
-2020-03-06 16:32:42,281 [ INFO] - Table was updated.
-2020-03-06 16:32:47,239 [ INFO] - Updating table...
-2020-03-06 16:32:47,240 [ INFO] - Table was updated.
-2020-03-06 16:32:49,778 [ INFO] - Starting URL is https://conditionservice.com.ua/
-2020-03-06 16:32:51,766 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/remont-konditsionerov
-2020-03-06 16:32:52,239 [ INFO] - Updating table...
-2020-03-06 16:32:52,242 [ INFO] - Table was updated.
-2020-03-06 16:32:52,452 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/chistka-konditsionerov
-2020-03-06 16:32:53,077 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/ustanovka-konditsionerov
-2020-03-06 16:32:53,747 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/kontakty
-2020-03-06 16:32:54,337 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/remont-chistka-konditsionerov-podol
-2020-03-06 16:32:54,817 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/obolon
-2020-03-06 16:32:55,269 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/desnyanskij-rajon
-2020-03-06 16:32:55,739 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/podol
-2020-03-06 16:32:56,200 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/darnitsa
-2020-03-06 16:32:56,625 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/levyj-bereg
-2020-03-06 16:32:57,239 [ INFO] - Updating table...
-2020-03-06 16:32:57,242 [ INFO] - Table was updated.
-2020-03-06 16:32:58,777 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/remont-konditsionera-esli-ne-kholodit
-2020-03-06 16:32:59,205 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/remont-konditsionera-pri-utechke-freona
-2020-03-06 16:32:59,611 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/kak-vybrat-konditsioner
-2020-03-06 16:33:00,025 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/split-sistemy
-2020-03-06 16:33:00,492 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/invertornye-konditsionery
-2020-03-06 16:33:01,918 [ INFO] - New parsing page is https://conditionservice.com.ua/invertornye-konditsionery
-2020-03-06 16:33:02,239 [ INFO] - Updating table...
-2020-03-06 16:33:02,241 [ INFO] - Table was updated.
-2020-03-06 16:33:05,610 [ INFO] - New parsing page is https://conditionservice.com.ua/split-sistemy
-2020-03-06 16:33:07,240 [ INFO] - Updating table...
-2020-03-06 16:33:07,242 [ INFO] - Table was updated.
-2020-03-06 16:33:09,321 [ INFO] - New parsing page is https://conditionservice.com.ua/kak-vybrat-konditsioner
-2020-03-06 16:33:11,500 [ INFO] - New parsing page is https://conditionservice.com.ua/remont-konditsionera-pri-utechke-freona
-2020-03-06 16:33:12,240 [ INFO] - Updating table...
-2020-03-06 16:33:12,242 [ INFO] - Table was updated.
-2020-03-06 16:33:13,297 [ INFO] - New parsing page is https://conditionservice.com.ua/remont-konditsionera-esli-ne-kholodit
-2020-03-06 16:33:15,180 [ INFO] - New parsing page is https://conditionservice.com.ua/levyj-bereg
-2020-03-06 16:33:15,803 [ INFO] - Adding new URL for scanning: http://conditionservice.com.ua/
-2020-03-06 16:33:16,334 [ INFO] - New parsing page is http://conditionservice.com.ua/
-2020-03-06 16:33:17,160 [ INFO] - New parsing page is https://conditionservice.com.ua/darnitsa
-2020-03-06 16:33:17,240 [ INFO] - Updating table...
-2020-03-06 16:33:17,242 [ INFO] - Table was updated.
-2020-03-06 16:33:18,940 [ INFO] - New parsing page is https://conditionservice.com.ua/podol
-2020-03-06 16:33:20,890 [ INFO] - New parsing page is https://conditionservice.com.ua/desnyanskij-rajon
-2020-03-06 16:33:22,240 [ INFO] - Updating table...
-2020-03-06 16:33:22,243 [ INFO] - Table was updated.
-2020-03-06 16:33:22,964 [ INFO] - New parsing page is https://conditionservice.com.ua/obolon
-2020-03-06 16:33:25,042 [ INFO] - New parsing page is https://conditionservice.com.ua/remont-chistka-konditsionerov-podol
-2020-03-06 16:33:26,818 [ INFO] - New parsing page is https://conditionservice.com.ua/kontakty
-2020-03-06 16:33:27,241 [ INFO] - Updating table...
-2020-03-06 16:33:27,244 [ INFO] - Table was updated.
-2020-03-06 16:33:27,560 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/obsluzhivanie-konditsionerov
-2020-03-06 16:33:28,216 [ INFO] - New parsing page is https://conditionservice.com.ua/obsluzhivanie-konditsionerov
-2020-03-06 16:33:28,669 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/index.php
-2020-03-06 16:33:29,125 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/index.php?option=com_finder
-2020-03-06 16:33:29,960 [ INFO] - New parsing page is https://conditionservice.com.ua/index.php?option=com_finder
-2020-03-06 16:33:32,162 [ INFO] - New parsing page is https://conditionservice.com.ua/index.php
-2020-03-06 16:33:32,241 [ INFO] - Updating table...
-2020-03-06 16:33:32,243 [ INFO] - Table was updated.
-2020-03-06 16:33:36,507 [ INFO] - New parsing page is https://conditionservice.com.ua/ustanovka-konditsionerov
-2020-03-06 16:33:37,268 [ INFO] - Updating table...
-2020-03-06 16:33:37,269 [ INFO] - Table was updated.
-2020-03-06 16:33:37,709 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/index.php/kontakty
-2020-03-06 16:33:39,228 [ INFO] - New parsing page is https://conditionservice.com.ua/index.php/kontakty
-2020-03-06 16:33:41,703 [ INFO] - New parsing page is https://conditionservice.com.ua/chistka-konditsionerov
-2020-03-06 16:33:42,242 [ INFO] - Updating table...
-2020-03-06 16:33:42,243 [ INFO] - Table was updated.
-2020-03-06 16:33:46,599 [ INFO] - New parsing page is https://conditionservice.com.ua/remont-konditsionerov
-2020-03-06 16:33:47,243 [ INFO] - Updating table...
-2020-03-06 16:33:47,244 [ INFO] - Table was updated.
-2020-03-06 16:33:51,058 [ INFO] - Updating table...
-2020-03-06 16:33:51,059 [ INFO] - Table was updated.
-2020-03-06 16:33:51,059 [ INFO] - The website was scanned.
+2020-03-11 15:39:34,079 [ INFO] - The program was started.
+2020-03-11 15:39:34,080 [ INFO] - Initialization WebSpy...
+2020-03-11 15:39:34,081 [ INFO] - Initialization GUI...
+2020-03-11 15:39:34,382 [ INFO] - Setting up pop-up menu
+2020-03-11 15:39:34,387 [ INFO] - Pop-up menu was set up
+2020-03-11 15:39:34,387 [ INFO] - Setting up pop-up menu
+2020-03-11 15:39:34,388 [ INFO] - Pop-up menu was set up
+2020-03-11 15:39:34,388 [ INFO] - Setting up pop-up menu
+2020-03-11 15:39:34,391 [ INFO] - Pop-up menu was set up
+2020-03-11 15:39:34,597 [ INFO] - GUI was initialized.
+2020-03-11 15:39:34,597 [ INFO] - WebSpy was initialized.
+2020-03-11 15:39:37,535 [ INFO] - Running spider...
+2020-03-11 15:39:37,537 [ INFO] - Initialization spider...
+2020-03-11 15:39:37,537 [ INFO] - Spider was initialized.
+2020-03-11 15:39:37,537 [ INFO] - Start scanning.
+2020-03-11 15:39:37,537 [ INFO] - Scanning website...
+2020-03-11 15:39:37,549 [ INFO] - Updating table...
+2020-03-11 15:39:37,551 [ INFO] - Table was updated.
+2020-03-11 15:39:42,548 [ INFO] - Updating table...
+2020-03-11 15:39:42,548 [ INFO] - Table was updated.
+2020-03-11 15:39:45,271 [ INFO] - Starting URL is https://conditionservice.com.ua/
+2020-03-11 15:39:47,548 [ INFO] - Updating table...
+2020-03-11 15:39:47,550 [ INFO] - Table was updated.
+2020-03-11 15:39:48,131 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/remont-konditsionerov
+2020-03-11 15:39:48,903 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/chistka-konditsionerov
+2020-03-11 15:39:49,666 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/ustanovka-konditsionerov
+2020-03-11 15:39:50,410 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/kontakty
+2020-03-11 15:39:51,117 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/remont-chistka-konditsionerov-podol
+2020-03-11 15:39:51,874 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/obolon
+2020-03-11 15:39:52,548 [ INFO] - Updating table...
+2020-03-11 15:39:52,549 [ INFO] - Table was updated.
+2020-03-11 15:39:52,645 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/desnyanskij-rajon
+2020-03-11 15:39:54,029 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/podol
+2020-03-11 15:39:54,773 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/darnitsa
+2020-03-11 15:39:55,563 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/levyj-bereg
+2020-03-11 15:39:57,549 [ INFO] - Updating table...
+2020-03-11 15:39:57,550 [ INFO] - Table was updated.
+2020-03-11 15:39:58,728 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/remont-konditsionera-esli-ne-kholodit
+2020-03-11 15:39:59,465 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/remont-konditsionera-pri-utechke-freona
+2020-03-11 15:40:00,183 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/kak-vybrat-konditsioner
+2020-03-11 15:40:00,904 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/split-sistemy
+2020-03-11 15:40:01,671 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/invertornye-konditsionery
+2020-03-11 15:40:02,549 [ INFO] - Updating table...
+2020-03-11 15:40:02,551 [ INFO] - Table was updated.
+2020-03-11 15:40:03,922 [ INFO] - New parsing page is https://conditionservice.com.ua/invertornye-konditsionery
+2020-03-11 15:40:07,574 [ INFO] - Updating table...
+2020-03-11 15:40:07,577 [ INFO] - Table was updated.
+2020-03-11 15:40:09,194 [ INFO] - New parsing page is https://conditionservice.com.ua/split-sistemy
+2020-03-11 15:40:11,924 [ INFO] - New parsing page is https://conditionservice.com.ua/kak-vybrat-konditsioner
+2020-03-11 15:40:12,549 [ INFO] - Updating table...
+2020-03-11 15:40:12,571 [ INFO] - Table was updated.
+2020-03-11 15:40:14,760 [ INFO] - New parsing page is https://conditionservice.com.ua/remont-konditsionera-pri-utechke-freona
+2020-03-11 15:40:17,114 [ INFO] - New parsing page is https://conditionservice.com.ua/remont-konditsionera-esli-ne-kholodit
+2020-03-11 15:40:17,550 [ INFO] - Updating table...
+2020-03-11 15:40:17,551 [ INFO] - Table was updated.
+2020-03-11 15:40:19,740 [ INFO] - New parsing page is https://conditionservice.com.ua/levyj-bereg
+2020-03-11 15:40:20,548 [ INFO] - Adding new URL for scanning: http://conditionservice.com.ua/
+2020-03-11 15:40:21,264 [ INFO] - New parsing page is http://conditionservice.com.ua/
+2020-03-11 15:40:22,314 [ INFO] - New parsing page is https://conditionservice.com.ua/darnitsa
+2020-03-11 15:40:22,550 [ INFO] - Updating table...
+2020-03-11 15:40:22,553 [ INFO] - Table was updated.
+2020-03-11 15:40:24,696 [ INFO] - New parsing page is https://conditionservice.com.ua/podol
+2020-03-11 15:40:26,814 [ INFO] - New parsing page is https://conditionservice.com.ua/desnyanskij-rajon
+2020-03-11 15:40:27,550 [ INFO] - Updating table...
+2020-03-11 15:40:27,552 [ INFO] - Table was updated.
+2020-03-11 15:40:29,044 [ INFO] - New parsing page is https://conditionservice.com.ua/obolon
+2020-03-11 15:40:31,403 [ INFO] - New parsing page is https://conditionservice.com.ua/remont-chistka-konditsionerov-podol
+2020-03-11 15:40:32,551 [ INFO] - Updating table...
+2020-03-11 15:40:32,552 [ INFO] - Table was updated.
+2020-03-11 15:40:33,807 [ INFO] - New parsing page is https://conditionservice.com.ua/kontakty
+2020-03-11 15:40:34,811 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/obsluzhivanie-konditsionerov
+2020-03-11 15:40:35,699 [ INFO] - New parsing page is https://conditionservice.com.ua/obsluzhivanie-konditsionerov
+2020-03-11 15:40:36,344 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/index.php
+2020-03-11 15:40:37,169 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/index.php?option=com_finder
+2020-03-11 15:40:37,551 [ INFO] - Updating table...
+2020-03-11 15:40:37,552 [ INFO] - Table was updated.
+2020-03-11 15:40:38,208 [ INFO] - New parsing page is https://conditionservice.com.ua/index.php?option=com_finder
+2020-03-11 15:40:41,592 [ INFO] - New parsing page is https://conditionservice.com.ua/index.php
+2020-03-11 15:40:42,551 [ INFO] - Updating table...
+2020-03-11 15:40:42,552 [ INFO] - Table was updated.
+2020-03-11 15:40:47,238 [ INFO] - New parsing page is https://conditionservice.com.ua/ustanovka-konditsionerov
+2020-03-11 15:40:47,551 [ INFO] - Updating table...
+2020-03-11 15:40:47,552 [ INFO] - Table was updated.
+2020-03-11 15:40:48,845 [ INFO] - Adding new URL for scanning: https://conditionservice.com.ua/index.php/kontakty
+2020-03-11 15:40:50,430 [ INFO] - New parsing page is https://conditionservice.com.ua/index.php/kontakty
+2020-03-11 15:40:52,552 [ INFO] - Updating table...
+2020-03-11 15:40:52,587 [ INFO] - Table was updated.
+2020-03-11 15:40:53,131 [ INFO] - New parsing page is https://conditionservice.com.ua/chistka-konditsionerov
+2020-03-11 15:40:57,583 [ INFO] - Updating table...
+2020-03-11 15:40:57,585 [ INFO] - Table was updated.
+2020-03-11 15:41:00,193 [ INFO] - New parsing page is https://conditionservice.com.ua/remont-konditsionerov
+2020-03-11 15:41:02,552 [ INFO] - Updating table...
+2020-03-11 15:41:02,554 [ INFO] - Table was updated.
+2020-03-11 15:41:05,597 [ INFO] - Updating table...
+2020-03-11 15:41:05,598 [ INFO] - Table was updated.
+2020-03-11 15:41:05,598 [ INFO] - The website was scanned.

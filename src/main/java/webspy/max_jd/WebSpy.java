@@ -36,12 +36,12 @@ public class WebSpy extends JFrame{
 
     private JProgressBar progressBar;
     private JMenu menuMenu;
-    private JPanel playBar;
+    private JPanel kitButtonsPanel;
     private JTable mainTable;
     private JTabbedPane tabs = new JTabbedPane();
-    private JButton playBut;
-    private JButton pauseBut;
-    private JButton stopBut;
+    private JButton playButton;
+    private JButton pauseButton;
+    private JButton stopButton;
     private JMenuItem saveProjectItem;
     JMenuItem exportMenuItem;
 
@@ -114,42 +114,42 @@ public class WebSpy extends JFrame{
         ImageIcon image = new ImageIcon(System.getProperty("user.dir") + File.separator + "src" + File.separator + "main" + File.separator
                 + "resources" + File.separator + "spider.png");
         setIconImage(image.getImage());
-        System.out.println(image);
-        //create buttons
-        playBut = new  JButton(startIcon);
-        pauseBut = new  JButton(pauseIcon);
-        pauseBut.setName("Pause Button");
-        stopBut = new JButton(stopIcon);
-        stopBut.setName("Stop Button");
+
+        //create buttons. the play button is not recognised by name in the program
+        playButton = new JButton(startIcon);
+        pauseButton = new JButton(pauseIcon);
+        pauseButton.setName("Pause Button");
+        stopButton = new JButton(stopIcon);
+        stopButton.setName("Stop Button");
 
         //setting buttons
-        pauseBut.setEnabled(false);
-        stopBut.setEnabled(false);
+        pauseButton.setEnabled(false);
+        stopButton.setEnabled(false);
 
-        pauseBut.addActionListener((actionEve) -> {
+        pauseButton.addActionListener((actionEve) -> {
             state = StateSEOSpy.PAUSED;
-            pauseBut.setEnabled(false);
-            playBut.setEnabled(true);
+            pauseButton.setEnabled(false);
+            playButton.setEnabled(true);
             progressBar.setVisible(false);
             saveProjectItem.setEnabled(true);
             exportMenuItem.setEnabled(true);
         });
 
-        stopBut.addActionListener((action) -> {
+        stopButton.addActionListener((action) -> {
             state = StateSEOSpy.STOPPED;
-            stopBut.setEnabled(false);
-            pauseBut.setEnabled(false);
-            playBut.setEnabled(true);
+            stopButton.setEnabled(false);
+            pauseButton.setEnabled(false);
+            playButton.setEnabled(true);
             progressBar.setVisible(false);
             saveProjectItem.setEnabled(true);
             exportMenuItem.setEnabled(true);
         });
 
-        playBut.addActionListener((actionEvent)-> {
+        playButton.addActionListener((actionEvent)-> {
             progressBar.setVisible(true);
-            pauseBut.setEnabled(true);
-            stopBut.setEnabled(true);
-            playBut.setEnabled(false);
+            pauseButton.setEnabled(true);
+            stopButton.setEnabled(true);
+            playButton.setEnabled(false);
             String webSiteToParse =
 
                     //"https://tie.com.ua/image/cache/data/2017/12/";
@@ -264,7 +264,7 @@ public class WebSpy extends JFrame{
         mainTable.getColumnModel().getColumn(0).setPreferredWidth(50);
     }
 
-    private JTable createAndGetTabErrorTable(){
+    private JTable createTabErrorTable() {
         JTable tableTabError = new JTable(mainTable.getModel());
         tableTabError.setAutoCreateRowSorter(true);
         tableTabError.getTableHeader().setReorderingAllowed(false);
@@ -335,80 +335,17 @@ public class WebSpy extends JFrame{
         });
     }
 
-    void createTabs(){
-        
+    void namingTabs(String[] names, JPanel[] panels){
+        if(names.length != panels.length)
+            throw new RuntimeException("Parameters of two arrays not equals.");
+
+        for(int i = 0; i < names.length; i++) {
+            tabs.addTab(names[i], panels[i]);
+        }
     }
-    //this - inherited methods
-    public void initGUI(){
-        logToFile.info("Initialization GUI...");
-        this.setName("SEOSpy");
 
-        createMenuBar();
-        createButtons();
+    void settingUpTabs(JTable tableTabError, JTable tableFilterTabResult, JPanel topPanel){
 
-        Object[][] rows = {};
-        Object[] nameColumns = createColumnsByNames();
-        createMainTable(rows, nameColumns);
-        settingMainTable();
-
-        JTable tableTabError = createAndGetTabErrorTable();
-
-        JPanel errorPanel = new JPanel(new BorderLayout());
-        //get JScrollPane from tableTabError
-        errorPanel.add( ((JScrollPane)((JViewport)tableTabError.getParent()).getParent()), BorderLayout.CENTER);
-
-        JPanel jpFilterTabFirst = createFirstFilterTab();
-
-        //create JTable for searching
-        JTable tableFilterTabResult = new JTable(mainTable.getModel());
-        settingFirstFilterTab(tableFilterTabResult, jpFilterTabFirst);
-
-        JPanel filterPanel = new JPanel(new BorderLayout());
-        JPanel innerPanel = new JPanel();
-        innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.Y_AXIS));
-        innerPanel.add(jpFilterTabFirst);
-        innerPanel.add(new JScrollPane(tableFilterTabResult));
-
-        filterPanel.add(innerPanel, BorderLayout.CENTER);
-
-        JTextField mainPage = new JTextField(); //?? why we need this?
-        mainPage.setPreferredSize(new Dimension(200, 24));
-
-
-
-        JPanel scanPanel = new JPanel();
-        scanPanel.setName("scanPanel");
-        scanPanel.setLayout(new BorderLayout());
-
-        progressBar = new JProgressBar();
-        progressBar.setIndeterminate(true);
-        progressBar.setVisible(false);
-        JPanel topPanel = new JPanel(new GridBagLayout());
-        JPanel innerPan1 = new JPanel();
-        JPanel innerPan2 = new JPanel();
-        innerPan1.add(mainPage);
-        innerPan1.add(playBut);
-        innerPan1.add(pauseBut);
-        innerPan1.add(stopBut);
-        playBar = innerPan1;
-
-        innerPan2.add(this.progressBar);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.FIRST_LINE_START;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0.5f;
-        topPanel.add(innerPan1, gbc);
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.FIRST_LINE_END;
-        topPanel.add(innerPan2, gbc);
-
-        scanPanel.add(((JScrollPane)((JViewport)mainTable.getParent()).getParent()), BorderLayout.CENTER);
-        scanPanel.add(topPanel, BorderLayout.NORTH);
-
-        tabs.addTab("Scan", scanPanel);
-        tabs.addTab("Error", errorPanel);
-        tabs.addTab("Filter", filterPanel);
 
         tabs.addChangeListener((changeEvent)->{
             int index = tabs.getSelectedIndex();
@@ -450,32 +387,96 @@ public class WebSpy extends JFrame{
             System.out.println("Current index " + tabCurrentIndex);
         });
 
+    }
+    //this - inherited methods
+    public void initGUI(){
+        logToFile.info("Initialization GUI...");
+        this.setName("SEOSpy");
 
+        createMenuBar();
+        createButtons();
 
+        Object[][] rows = {};
+        Object[] nameColumns = createColumnsByNames();
+        createMainTable(rows, nameColumns);
+        settingMainTable();
 
+        JTable tableTabError = createTabErrorTable();
 
-        add(tabs);
+        JPanel errorPanel = new JPanel(new BorderLayout());
+        //gets JScrollPane from tableTabError
+        errorPanel.add( ((JScrollPane)((JViewport)tableTabError.getParent()).getParent()), BorderLayout.CENTER);
 
+        JPanel jpFilterTabFirst = createFirstFilterTab();
 
+        //create JTable for searching
+        JTable tableFilterTabOfResult = new JTable(mainTable.getModel());
+        settingFirstFilterTab(tableFilterTabOfResult, jpFilterTabFirst);
 
+        JPanel filterPanel = new JPanel(new BorderLayout());
+        JPanel innerPanelOfFilterPanel = new JPanel();
+        innerPanelOfFilterPanel.setLayout(new BoxLayout(innerPanelOfFilterPanel, BoxLayout.Y_AXIS));
+        innerPanelOfFilterPanel.add(jpFilterTabFirst);
+        innerPanelOfFilterPanel.add(new JScrollPane(tableFilterTabOfResult));
+        filterPanel.add(innerPanelOfFilterPanel, BorderLayout.CENTER);
+
+        JTextField inputMainPageToStart = new JTextField();
+        inputMainPageToStart.setPreferredSize(new Dimension(200, 24));
+
+        JPanel scanPanel = new JPanel();
+        scanPanel.setName("scanPanel");
+        scanPanel.setLayout(new BorderLayout());
+
+        progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true);
+        progressBar.setVisible(false);
+
+        JPanel topPanel = new JPanel(new GridBagLayout());
+        kitButtonsPanel = new JPanel();
+        kitButtonsPanel.add(inputMainPageToStart);
+        kitButtonsPanel.add(playButton);
+        kitButtonsPanel.add(pauseButton);
+        kitButtonsPanel.add(stopButton);
+
+        JPanel innerPanelOfTopPanel = new JPanel();
+        innerPanelOfTopPanel.add(this.progressBar);
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        //setting up GridBagConstraints and add to the top panel
+        gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.weightx = 0.5f;
+        topPanel.add(kitButtonsPanel, gridBagConstraints);
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.anchor = GridBagConstraints.FIRST_LINE_END;
+        topPanel.add(innerPanelOfTopPanel, gridBagConstraints);
+
+        //get JScrollPane from mainTable and add to the panel of scanning
+        scanPanel.add(((JScrollPane)((JViewport)mainTable.getParent()).getParent()), BorderLayout.CENTER);
+        scanPanel.add(topPanel, BorderLayout.NORTH);
+
+        namingTabs(new String[] {"Scan", "Error", "Filter"},
+                new JPanel[]{scanPanel, errorPanel, filterPanel});
+        settingUpTabs(tableTabError, tableFilterTabOfResult, topPanel);
+        this.add(tabs);
+
+        //set up pop up menus on the tables
         setUpPopupMenu(mainTable);
         setUpPopupMenu(tableTabError);
-        setUpPopupMenu(tableFilterTabResult);
-
-
+        setUpPopupMenu(tableFilterTabOfResult);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //add logging when was pushed exit the button
+        //add logging when was pushed  the exit button
         this.addWindowListener(new WindowAdapter() {
             @Override public void windowClosing(WindowEvent event){
                 logToFile.info("The program was closed.");
             }
         });
 
-        setPreferredSize(new Dimension(800, 800));
-        setLocationRelativeTo(null);
-        pack();
-        setVisible(true);
+        this.setPreferredSize(new Dimension(800, 800));
+        this.setLocationRelativeTo(null);
+        this.pack();
+        this.setVisible(true);
 
         logToFile.info("GUI was initialized.");
     }
@@ -1132,9 +1133,9 @@ public class WebSpy extends JFrame{
                         if(state == StateSEOSpy.SCANING_ENDED){
                             menuMenu.getItem(0).setEnabled(true);// it does exportMenuItem.setEnabled(true);
                             ((JMenu)(menuMenu.getMenuComponent(1))).getItem(0).setEnabled(true);//it does saveProjectItem.setEnabled(true)
-                            ((JButton)playBar.getComponent(1)).setEnabled(true); // it does playBut.setEnabled(true);
-                            ((JButton)playBar.getComponent(2)).setEnabled(false); // it does pauseBut.setEnabled(false);
-                            ((JButton)playBar.getComponent(3)).setEnabled(false); // it does pauseBut.setEnabled(false);
+                            ((JButton) kitButtonsPanel.getComponent(1)).setEnabled(true); // it does playButton.setEnabled(true);
+                            ((JButton) kitButtonsPanel.getComponent(2)).setEnabled(false); // it does pauseButton.setEnabled(false);
+                            ((JButton) kitButtonsPanel.getComponent(3)).setEnabled(false); // it does pauseButton.setEnabled(false);
 
                             progressBar.setVisible(false);
                             updateTable();
