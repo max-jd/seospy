@@ -2,17 +2,19 @@ package webspy.max_jd;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 public class ExcelWriter {
     private static String[] nameColumns = {"#", "URL", "Canonical", "Response", "Title", "Description", "KeyWords", "H1", "Content-Type",
             "Meta-Robots", "Ex. links", "In links", "Out links", "Problem"};
 
-    public static void writeToFile(java.nio.file.Path path, SeoUrl[] arraySeoUrls){
+    public static void writeToFile(Path path, SeoUrl[] arraySeoUrls){
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet();
         Row headerRow = sheet.createRow(0);
@@ -39,64 +41,54 @@ public class ExcelWriter {
 
             if(SeoUrl.externalLinks.get(seoUrl.getURL()) != null){
                 if(SeoUrl.externalLinks.get(seoUrl.getURL()).size() != 0){
-                String columnExternalLinks = "";
-                for(String exLink : SeoUrl.externalLinks.get(seoUrl.getURL()))
-                    columnExternalLinks += exLink + System.lineSeparator();
-                newRow.createCell(10).setCellValue(columnExternalLinks);
+                    String columnAllExternalLinks = "";
+                    for(String exLink : SeoUrl.externalLinks.get(seoUrl.getURL())) {
+                        columnAllExternalLinks += exLink + System.lineSeparator();
+                    }
+                    newRow.createCell(10).setCellValue(columnAllExternalLinks);
                 }
             }else
                 newRow.createCell(10).setCellValue("");
 
-            String tempStr1 = Arrays.toString(seoUrl.statisticLinksOn.get(seoUrl.getURL()).toArray());
-            newRow.createCell(11).setCellValue(tempStr1.substring(1, tempStr1.length()-1)); //delete square braces []
+            String allLinksOn = Arrays.toString(seoUrl.statisticLinksOn.get(seoUrl.getURL()).toArray());
+            //delete square braces []
+            newRow.createCell(11).setCellValue(allLinksOn.substring(1, allLinksOn.length()-1));
 
             if(seoUrl.statisticLinksOut.get(seoUrl.getURL())!= null) {
-                String tempStr2 = Arrays.toString(seoUrl.statisticLinksOut.get(seoUrl.getURL()).toArray());
-                newRow.createCell(12).setCellValue(tempStr2.substring(1, tempStr2.length() - 1)); //delete square braces []
-            }else
+                String allLinksOut = Arrays.toString(seoUrl.statisticLinksOut.get(seoUrl.getURL()).toArray());
+                //delete square braces []
+                newRow.createCell(12).setCellValue(allLinksOut.substring(1, allLinksOut.length() - 1));
+            }else {
                 newRow.createCell(12).setCellValue("");
-
+            }
             newRow.createCell(13).setCellValue(seoUrl.getFlagSeoProblem());
         }
 
         for(int i = 0; i > nameColumns.length; i++){
-        sheet.autoSizeColumn(i);
+            sheet.autoSizeColumn(i);
         }
 
-        java.io.FileOutputStream fileOut = null;
+        if(!(Files.exists(path))) {
+            try{
+                Files.createFile(path);
+            }catch(IOException ex){
+                System.out.println(ex.toString());
+                WebSpy.logToFile.error(ex.toString());
+            }
+        }
+
+        try(FileOutputStream fileOut = new FileOutputStream(path.toString())){
+            workbook.write(fileOut);
+        }catch(IOException ex) {
+            System.out.println(ex.toString());
+            WebSpy.logToFile.error(ex.toString());
+        }
 
         try{
-            if(!(java.nio.file.Files.exists(path)))
-                java.nio.file.Files.createFile(path);
-
-            fileOut = new FileOutputStream(path.toString());
-            workbook.write(fileOut);
-
-        }catch(FileNotFoundException ex){
-            System.out.println("webspy.max_jd.ExcelWriter" + " writeToFile()" + ex);
-            System.out.println(ex); //future logging
-            WebSpy.logToFile.error(ex);
-        }catch(IOException ex){
-            System.out.println("webspy.max_jd.ExcelWriter" + " writeToFile()" + ex);
+            workbook.close();
+        }catch(IOException ex) {
             System.out.println(ex);
             WebSpy.logToFile.error(ex);
-        }finally{
-            try {
-                fileOut.close();
-            }catch(IOException ex){
-                System.out.println("webspy.max_jd.ExcelWriter" + " writeToFile() block finally" + ex);
-                System.out.println(ex); //future logging
-                WebSpy.logToFile.error(ex);
-            }
-
-            try{
-                workbook.close();
-            }catch(IOException ex){
-                System.out.println("webspy.max_jd.ExcelWriter" + " writeToFile() block try - try close workbook" + ex);
-                System.out.println(ex); //future logging
-                WebSpy.logToFile.error(ex);
-            }
         }
-
     }
 }

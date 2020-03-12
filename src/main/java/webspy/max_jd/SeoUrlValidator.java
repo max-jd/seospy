@@ -2,11 +2,11 @@ package webspy.max_jd;
 
 import org.apache.commons.validator.routines.UrlValidator;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import java.io.IOException;
 
 public class SeoUrlValidator extends UrlValidator {
     private String host;

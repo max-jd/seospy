@@ -17,12 +17,12 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable{
     private String  keywords;
     private int     countH1;
     private String  metaRobots;
-
     private String  contentType;
 
     private boolean haveSeoProblem;
     private final boolean isImage;
 
+    //collecting information
     public static Map<String, HashSet<String>> statisticLinksOn;
     public static Map<String, HashSet<String>> statisticLinksOut;
     public static Map<String, HashSet<String>> imagesReferredByPages;
@@ -39,7 +39,7 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable{
 
     SeoUrl(String url) {
         this.url = url;
-        //by default it's not an image
+        //by default this's not an image
         isImage = false;
     }
     SeoUrl(String url, boolean isImage) {
@@ -76,52 +76,111 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable{
             analysisAsImage();
             return;
         }
-
-        analysisAsUrl();
+        analysisAsSeoUrl();
     }
 
-    private void analysisAsImage(){
+    private void analysisAsImage() {
         if(this.response != 200) haveSeoProblem = true;
         else  haveSeoProblem = false;
     }
 
-    private void analysisAsUrl(){
-        if((countH1 > 1 | countH1 == 0) || (response != 200) )
+    private void analysisAsSeoUrl() {
+        if((countH1 > 1 | countH1 == 0) || (response != 200)) {
             haveSeoProblem = true;
+        }
         else haveSeoProblem = false;
     }
 
-    public boolean isImage() { return isImage; }
+    public boolean isImage() {
+        return isImage;
+    }
 
     /*only setters*/
-    public void setCanonical(String canonical) { this.canonical = canonical; }
-    public void setResponse(int response) { this.response = response; }
-    public void setTitle(String title) { this.title = title; }
-    public void setDescription(String description) { this.description = description; }
-    public void setKeywords(String keywords) { this.keywords = keywords; }
-    public void setCountH1(int countH1) { this.countH1 = countH1; }
-    public void setMetaRobots(String metaRobots) { this.metaRobots = metaRobots; }
-    public void setContentType(String contentType) { this.contentType = contentType; }
-    public void setHaveSeoProblem(boolean seoProblem) { this.haveSeoProblem = seoProblem; }
+    public void setCanonical(String canonical) {
+        this.canonical = canonical;
+    }
+
+    public void setResponse(int response) {
+        this.response = response;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
+
+    public void setCountH1(int countH1) {
+        this.countH1 = countH1;
+    }
+
+    public void setMetaRobots(String metaRobots) {
+        this.metaRobots = metaRobots;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public void setHaveSeoProblem(boolean seoProblem) {
+        this.haveSeoProblem = seoProblem;
+    }
 
     /*Only getters*/
-    public String getURL() {return url;}
-    public String getCanonical() { return canonical; }
-    public int getResponse() { return response; }
-    public String getTitle() { return title; }
-    public String getDescription() { return description; }
-    public String getKeywords() { return keywords; }
-    public int getCountH1() { return countH1; }
-    public String getMetarobots() { return metaRobots; }
-    public String getContentType() { return contentType; }
-    public Boolean getFlagSeoProblem(){ return haveSeoProblem; }
+    public String getURL() {
+        return url;
+    }
+
+    public String getCanonical() {
+        return canonical;
+    }
+
+    public int getResponse() {
+        return response;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public int getCountH1() {
+        return countH1;
+    }
+
+    public String getMetarobots() {
+        return metaRobots;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public Boolean getFlagSeoProblem(){
+        return haveSeoProblem;
+    }
 }
 
 //Singleton and Director for set up SeOUrls
 class TunnerSeoURL {
     private static TunnerSeoURL tunner;
 
-    private TunnerSeoURL() {}
+    private TunnerSeoURL() {
+
+    }
 
     static TunnerSeoURL getTunner() {
         if (tunner == null)
@@ -133,7 +192,7 @@ class TunnerSeoURL {
         if(url.isImage()) {
             setResponse(url, page);
             setContentType(url);
-        } else {
+        } else { //it's a SeoUrl
         setResponse(url, page);
         setCanonical(url, page);
         setTitle(url, page);

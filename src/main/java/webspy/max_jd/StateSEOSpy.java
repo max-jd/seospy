@@ -5,5 +5,5 @@ public enum StateSEOSpy {
     RUNNING,
     PAUSED,
     STOPPED,
-    SCANING_ENDED
+    SCANNING_ENDED
 }
