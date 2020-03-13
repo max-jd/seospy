@@ -30,11 +30,7 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable{
     public static Map<String, String> cacheContentTypePages;
 
     static {
-        statisticLinksOn = new HashMap<String, HashSet<String>>();
-        statisticLinksOut = new HashMap<String, HashSet<String>>();
-        externalLinks = new HashMap<String, HashSet<String>>();
-        cacheContentTypePages = new HashMap<String, String>();
-        imagesReferredByPages = new HashMap<String, HashSet<String>>();
+        setNewStatistics();
     }
 
     SeoUrl(String url) {
@@ -45,6 +41,14 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable{
     SeoUrl(String url, boolean isImage) {
         this.url = url;
         this.isImage = isImage;
+    }
+
+    public static void setNewStatistics() {
+        statisticLinksOn = new HashMap<String, HashSet<String>>();
+        statisticLinksOut = new HashMap<String, HashSet<String>>();
+        externalLinks = new HashMap<String, HashSet<String>>();
+        cacheContentTypePages = new HashMap<String, String>();
+        imagesReferredByPages = new HashMap<String, HashSet<String>>();
     }
 
     @Override

@@ -146,7 +146,14 @@ public class WebSpy extends JFrame {
             exportMenuItem.setEnabled(true);
         });
 
-        playButton.addActionListener((actionEvent)-> {
+        playButton.addActionListener((actionEvent) -> {
+            //if the program was stopped or scanning was ended and need start form beginning - reset the all previous result
+            if(state.equals(StateSEOSpy.STOPPED) || state.equals(StateSEOSpy.SCANNING_ENDED)) {
+                ((CustomizedDefaultTableModel)mainTable.getModel()).setRowCount(0);
+                SeoUrl.setNewStatistics();
+                dequeSeoUrls = new LinkedList<SeoUrl>();
+                imagesSeoUrls = new HashSet<SeoUrl>();
+            }
             progressBar.setVisible(true);
             pauseButton.setEnabled(true);
             stopButton.setEnabled(true);
@@ -791,11 +798,11 @@ public class WebSpy extends JFrame {
         Thread updater = new Thread() {
             @Override
             public void run() {
-                while(state == StateSEOSpy.RUNNING){
+                while(state == StateSEOSpy.RUNNING) {
                     SwingUtilities.invokeLater(() -> updateTable());
-                    try{
-                        Thread.sleep(5000);
-                    }catch(InterruptedException ex){
+                    try {
+                        Thread.sleep(2000);
+                    } catch(InterruptedException ex) {
                         System.out.println(ex);
                         logToFile.info(ex.toString());
                     }
@@ -946,14 +953,11 @@ public class WebSpy extends JFrame {
 
         void scanWithDeque() {
             logToFile.info("Scanning website...");
-            if(state == StateSEOSpy.NOT_RUN_YET || state == StateSEOSpy.SCANNING_ENDED ||
-                    state == StateSEOSpy.STOPPED) {
-
+            if(state == StateSEOSpy.NOT_RUN_YET || state == StateSEOSpy.SCANNING_ENDED || state == StateSEOSpy.STOPPED) {
                 SwingWorker sw = new SwingWorker() {
                     @Override
                     protected Void doInBackground() {
-                        if(state == StateSEOSpy.NOT_RUN_YET || state == StateSEOSpy.SCANNING_ENDED ||
-                                state == StateSEOSpy.STOPPED) {
+                        if(state != StateSEOSpy.PAUSED) {
                             state = StateSEOSpy.RUNNING;
 
                             //Create a thread for updating table
@@ -975,8 +979,8 @@ public class WebSpy extends JFrame {
                                 SeoUrl.cacheContentTypePages.put(parsingHtmlPage.getUrl().toString(), validator.getContentType(parsingHtmlPage.getUrl().toString()));
                                 System.out.println(parsingHtmlPage.getUrl().toString());
                                 do {
-                                    ifProgramWasPausedThenWait();
-                                    if(wasProgramStopped()){
+                                    ifPausedThenWait();
+                                    if(wasStopped()) {
                                         return null;
                                     }
 
@@ -1068,10 +1072,11 @@ public class WebSpy extends JFrame {
                             }
                             state = StateSEOSpy.SCANNING_ENDED;
                             wc.close();
-                        }else if(state == StateSEOSpy.PAUSED){
+                        }else if(state == StateSEOSpy.PAUSED) {
                             state = StateSEOSpy.RUNNING;
-                            this.notify();
-                            System.out.println("Updating table...");
+                            synchronized(lock) {
+                                lock.notify();
+                            }
                             createConcurrentUpdaterForTable();
                         }
                         return null;
@@ -1093,32 +1098,31 @@ public class WebSpy extends JFrame {
 
                 };
                 sw.execute();
-            }else if(state == StateSEOSpy.PAUSED){
-                Runnable runToNotify = new Runnable(){
+            } else if(state == StateSEOSpy.PAUSED) {
+                Runnable runToNotify = new Runnable() {
                     @Override
                     public void run(){
-                        synchronized(lock){
+                        synchronized(lock) {
+                            state = StateSEOSpy.RUNNING;
                             lock.notify();
                         }
                     }
                 };
                 new Thread(runToNotify).start();
             }
-
         }
 
         private void handleImageFormHtmlTagA(String imageFromTagA, HtmlPage page){
-            SeoUrl suToImage = new SeoUrl(imageFromTagA, true);
+            SeoUrl seoUrlToImage = new SeoUrl(imageFromTagA, true);
             SeoUrl.cacheContentTypePages.putIfAbsent(imageFromTagA, validator.getContentType(imageFromTagA));
-            tunner.tunne(suToImage, page);
-            suToImage.analyzeURL();
+            tunner.tunne(seoUrlToImage, page);
+            seoUrlToImage.analyzeURL();
 
             SeoUrl.statisticLinksOut.putIfAbsent(page.getUrl().toString(), new HashSet<String>());
             SeoUrl.statisticLinksOut.get(page.getUrl().toString()).add(imageFromTagA);
-            SeoUrl.statisticLinksOn.putIfAbsent(suToImage.toString(), new HashSet<String>());
-            SeoUrl.statisticLinksOn.get(suToImage.toString()).add(page.getUrl().toString());
-
-            imagesSeoUrls.add(suToImage);
+            SeoUrl.statisticLinksOn.putIfAbsent(seoUrlToImage.toString(), new HashSet<String>());
+            SeoUrl.statisticLinksOn.get(seoUrlToImage.toString()).add(page.getUrl().toString());
+            imagesSeoUrls.add(seoUrlToImage);
         }
 
         private void handleImages(HtmlPage parsingPage){
@@ -1148,45 +1152,46 @@ public class WebSpy extends JFrame {
                 SeoUrl.statisticLinksOn.get(seoUrl.toString()).add(parsingPage.getUrl().toString());
                 imagesSeoUrls.add(seoUrl);
             }
-
         }
     }
 
-    private void ifProgramWasPausedThenWait(){
-        synchronized(lock){
-            while(state == StateSEOSpy.PAUSED){
-                try{
+    private void ifPausedThenWait() {
+        synchronized(lock) {
+            while(state == StateSEOSpy.PAUSED) {
+                try {
                     WebSpy.logToFile.info("Thread for scanning was stopped.");
                     lock.wait();
-                    System.out.println("Woke up");
                     WebSpy.logToFile.info("Thread for scanning was woke up.");
-                    state = StateSEOSpy.RUNNING;
-                }catch(InterruptedException ex){
+                   // state = StateSEOSpy.RUNNING;
+                } catch(InterruptedException ex) {
                     logToFile.error(ex.toString());
                     System.out.println(ex);
                 }
             }
+
         }
     }
 
-    private boolean wasProgramStopped(){
+    private boolean wasStopped() {
         return state == StateSEOSpy.STOPPED;
     }
 }
 
 
 class CustomizedDefaultTableModel extends DefaultTableModel{
-    CustomizedDefaultTableModel(Object[][] rows, Object[] columns){
+    CustomizedDefaultTableModel(Object[][] rows, Object[] columns) {
         super(rows, columns);
     }
 
     @Override
-    public boolean isCellEditable(int row, int column){
+    public boolean isCellEditable(int row, int column) {
         return false;
     }
+
     @Override
-    public Class getColumnClass(int column){
-        switch(column){
+    public Class getColumnClass(int column) {
+        //for int return Integer, otherwise String
+        switch(column) {
             case 0:
             case 3:
             case 7:
@@ -1204,33 +1209,38 @@ class ObjectDefaultTableCellRenderer extends DefaultTableCellRenderer{
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
         int indexView = table.getRowSorter().convertRowIndexToModel(row);
-        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, indexView, column);
+        Component cellRendererComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, indexView, column);
 
-        if (isSelected)
-            return c;
+        if(isSelected) {
+            return cellRendererComponent;
+        }
 
-        if(table.getModel().getValueAt(indexView, 13).equals("true")){
-            c.setBackground(Color.RED);}
-        else{
-            c.setBackground(Color.WHITE);}
-        return c;
+        if(table.getModel().getValueAt(indexView, 13).equals("true")) {
+            cellRendererComponent.setBackground(Color.RED);
+        }
+        else {
+            cellRendererComponent.setBackground(Color.WHITE);
+        }
+        return cellRendererComponent;
     }
 }
 
-class IntegerDefaultTableCellRenderer extends DefaultTableCellRenderer{
+class IntegerDefaultTableCellRenderer extends DefaultTableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
         int indexViewRow = table.getRowSorter().convertRowIndexToModel(row);
-        Component c = super.getTableCellRendererComponent(table, value, isSelected,hasFocus, indexViewRow, column);
+        Component cellRendererComponent = super.getTableCellRendererComponent(table, value, isSelected,hasFocus, indexViewRow, column);
 
-        if (isSelected)
-            return c;
+        if (isSelected) {
+            return cellRendererComponent;
+        }
 
-        if(table.getModel().getValueAt(indexViewRow, 13).equals("true")){
-            c.setBackground(Color.RED);}
-        else{
-            c.setBackground(Color.WHITE);}
-
-        return c;
+        if(table.getModel().getValueAt(indexViewRow, 13).equals("true")) {
+            cellRendererComponent.setBackground(Color.RED);
+        }
+        else {
+            cellRendererComponent.setBackground(Color.WHITE);
+        }
+        return cellRendererComponent;
     }
 }
