@@ -588,7 +588,7 @@ public class WebSpy extends JFrame {
 
         for(SeoUrl seoUrl : dequeSeoUrls){
             data[0] = numberOfPage++;
-            data[1] = seoUrl.getURL();
+            data[1] = seoUrl.getUrl();
             data[2] = seoUrl.getCanonical();
             data[3] = seoUrl.getResponse();
             data[4] = seoUrl.getTitle();
@@ -596,16 +596,16 @@ public class WebSpy extends JFrame {
             data[6] = seoUrl.getKeywords();
             data[7] = seoUrl.getCountH1();
             data[8] = seoUrl.getContentType();
-            data[9] = seoUrl.getMetarobots();
+            data[9] = seoUrl.getMetaRobots();
 
-            if(SeoUrl.externalLinks.get((seoUrl.getURL())) != null) {
-                data[10] = SeoUrl.externalLinks.get((seoUrl.getURL())).size();
+            if(SeoUrl.externalLinks.get((seoUrl.getUrl())) != null) {
+                data[10] = SeoUrl.externalLinks.get((seoUrl.getUrl())).size();
             } else {
                 data[10] = 0;
             }
 
-            if(SeoUrl.statisticLinksOn.get(seoUrl.getURL()) != null) {
-                data[11] = SeoUrl.statisticLinksOn.get(seoUrl.getURL()).size();
+            if(SeoUrl.statisticLinksOn.get(seoUrl.getUrl()) != null) {
+                data[11] = SeoUrl.statisticLinksOn.get(seoUrl.getUrl()).size();
             } else {
                 data[11] = -1;
             }
@@ -617,12 +617,12 @@ public class WebSpy extends JFrame {
             }
             */
 
-            if(SeoUrl.statisticLinksOut.get(seoUrl.getURL()) != null) {
-                data[12] = SeoUrl.statisticLinksOut.get(seoUrl.getURL()).size();
+            if(SeoUrl.statisticLinksOut.get(seoUrl.getUrl()) != null) {
+                data[12] = SeoUrl.statisticLinksOut.get(seoUrl.getUrl()).size();
             } else {
                 data[12] = -1;
             }
-            data[13] = seoUrl.getFlagSeoProblem().toString();
+            data[13] = seoUrl.isHaveSeoProblem().toString();
 
             tableModel.addRow(data);
         }
@@ -631,11 +631,11 @@ public class WebSpy extends JFrame {
 
         for(SeoUrl seoImage : imagesSeoUrls) {
             data[0]  = numberOfPage++;
-            data[1]  = seoImage.getURL();
+            data[1]  = seoImage.getUrl();
             data[3]  = seoImage.getResponse();
             data[8]  = seoImage.getContentType();
-            data[11] = SeoUrl.statisticLinksOn.get(seoImage.getURL()).size();
-            data[13] = seoImage.getFlagSeoProblem().toString();
+            data[11] = SeoUrl.statisticLinksOn.get(seoImage.getUrl()).size();
+            data[13] = seoImage.isHaveSeoProblem().toString();
 
             tableModel.addRow(data);
         }
@@ -778,10 +778,10 @@ public class WebSpy extends JFrame {
                 }
 
                 for(SeoUrl s : dequeSeoUrls){
-                    if (s.getURL().equals(selectedUrl)) {
+                    if (s.getUrl().equals(selectedUrl)) {
                         String columnExternalLinks = "";
-                        if(SeoUrl.externalLinks.get(s.getURL()) != null) {
-                            for (String externalUrl : SeoUrl.externalLinks.get(s.getURL()))
+                        if(SeoUrl.externalLinks.get(s.getUrl()) != null) {
+                            for (String externalUrl : SeoUrl.externalLinks.get(s.getUrl()))
                                 columnExternalLinks += externalUrl + System.lineSeparator();
                         }
                         externalLinksTextArea.setText(columnExternalLinks);
@@ -876,7 +876,7 @@ public class WebSpy extends JFrame {
         updater.start();
     }
 
-    void runSpider(String websiteMainPage) {
+   private void runSpider(String websiteMainPage) {
         logToFile.info("Running spider...");
         if(spider == null) {
             try {
@@ -904,7 +904,7 @@ public class WebSpy extends JFrame {
             logToFile.info("Spider was initialized.");
         }
 
-        void scanWithSets() {
+        public void scanWithSets() {
             logToFile.info("Scanning website...");
             System.out.println("Start the program");
             Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
@@ -959,27 +959,27 @@ public class WebSpy extends JFrame {
 
 
 
-                  if(!(validatorUrl.isValid(potentialUrl.toString()))){
+                    if(!(validatorUrl.isValid(potentialUrl.toString()))){
                       System.out.println("Not valid: " + potentialUrl.toString());
                       continue;
-                  }
+                    }
 
-                  if(!potentialUrl.getHost().equals(domain)) {
+                    if(!potentialUrl.getHost().equals(domain)) {
                     System.out.println("Not equal domain: " + potentialUrl.toString());
                     continue;
                     }
 
-                if(potentialUrl.toString().indexOf('#') != -1){
+                    if(potentialUrl.toString().indexOf('#') != -1){
                     System.out.println("Index of " + potentialUrl.toString()
                             .indexOf('#') + " URL is " + potentialUrl.toString());
                     continue;
-                }
+                    }
 
-                if(! (checkedPages.contains(potentialUrl.toString())) &&
+                    if(! (checkedPages.contains(potentialUrl.toString())) &&
                         !(leftPages.contains(potentialUrl.toString()))){
                     System.out.println("Add value: " + potentialUrl.toString());
                     leftPages.add(potentialUrl.toString());
-                }
+                    }
             }
 
             SeoUrl newSeoUrl = new SeoUrl(parsingPage.getUrl().toString());
@@ -1016,7 +1016,7 @@ public class WebSpy extends JFrame {
         }
 
 
-        void scanWithDeque() {
+       public void scanWithDeque() {
             logToFile.info("Scanning website...");
             if(state == StateSEOSpy.NOT_RUN_YET || state == StateSEOSpy.SCANNING_ENDED || state == StateSEOSpy.STOPPED) {
                 SwingWorker sw = new SwingWorker() {
@@ -1102,8 +1102,8 @@ public class WebSpy extends JFrame {
                                             //check if the link lead to external site
                                             if(! validator.isSameHost(new URL(potentialNewUrl) )) {
                                                 //if it is, then add it for statistics and continue for new parsing page
-                                                SeoUrl.externalLinks.putIfAbsent(seoUrlForParsingPage.getURL(), new HashSet<String>());
-                                                SeoUrl.externalLinks.get(seoUrlForParsingPage.getURL()).add(potentialNewUrl);
+                                                SeoUrl.externalLinks.putIfAbsent(seoUrlForParsingPage.getUrl(), new HashSet<String>());
+                                                SeoUrl.externalLinks.get(seoUrlForParsingPage.getUrl()).add(potentialNewUrl);
                                                 continue;
                                             }
 
@@ -1142,7 +1142,7 @@ public class WebSpy extends JFrame {
                                         break;
                                     } else {
                                         // else get the next URL
-                                        String nextUrl = (dequeSeoUrls.pollLast()).getURL();
+                                        String nextUrl = (dequeSeoUrls.pollLast()).getUrl();
                                         System.out.println("Parse URL is :" + nextUrl);
                                         parsingHtmlPage = wc.getPage(nextUrl);
                                         logToFile.info("New parsing page is " + parsingHtmlPage.getUrl().toString());
@@ -1270,7 +1270,8 @@ public class WebSpy extends JFrame {
 }
 
 
-class CustomizedDefaultTableModel extends DefaultTableModel{
+class CustomizedDefaultTableModel extends DefaultTableModel {
+
     CustomizedDefaultTableModel(Object[][] rows, Object[] columns) {
         super(rows, columns);
     }
@@ -1295,9 +1296,11 @@ class CustomizedDefaultTableModel extends DefaultTableModel{
                 return String.class;
         }
     }
+
 }
 
-class ObjectDefaultTableCellRenderer extends DefaultTableCellRenderer{
+class ObjectDefaultTableCellRenderer extends DefaultTableCellRenderer {
+
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
         int indexView = table.getRowSorter().convertRowIndexToModel(row);
@@ -1315,9 +1318,11 @@ class ObjectDefaultTableCellRenderer extends DefaultTableCellRenderer{
         }
         return cellRendererComponent;
     }
+
 }
 
 class IntegerDefaultTableCellRenderer extends DefaultTableCellRenderer {
+
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
         int indexViewRow = table.getRowSorter().convertRowIndexToModel(row);
@@ -1335,5 +1340,6 @@ class IntegerDefaultTableCellRenderer extends DefaultTableCellRenderer {
         }
         return cellRendererComponent;
     }
+
 }
 

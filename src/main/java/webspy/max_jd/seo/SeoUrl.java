@@ -3,6 +3,7 @@ package webspy.max_jd.seo;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -10,7 +11,12 @@ import java.util.HashSet;
 import java.util.Map;
 
 //Builder
-public class SeoUrl implements Comparable<SeoUrl>, Serializable{
+@Getter
+@Setter
+@RequiredArgsConstructor
+@EqualsAndHashCode
+public class SeoUrl implements Comparable<SeoUrl>, Serializable {
+    @NonNull
     private final String  url;
     private String  canonical;
     private int     response;
@@ -21,7 +27,8 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable{
     private String  metaRobots;
     private String  contentType;
 
-    private boolean haveSeoProblem;
+    private Boolean haveSeoProblem;
+    @NonNull
     private final boolean isImage;
 
     //collecting information
@@ -40,10 +47,6 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable{
         //by default this's not an image
         isImage = false;
     }
-    SeoUrl(String url, boolean isImage) {
-        this.url = url;
-        this.isImage = isImage;
-    }
 
     public static void setNewStatistics() {
         statisticLinksOn = new HashMap<String, HashSet<String>>();
@@ -56,20 +59,6 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable{
     @Override
     public int compareTo(SeoUrl s2) {
         return this.url.compareTo(s2.url);
-    }
-
-    @Override
-    public int hashCode() {
-        return url.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object other){
-        if (other == null) return false;
-        if(other == this) return true;
-        if(!(other instanceof SeoUrl))return false;
-        SeoUrl otherSeoUrl = (SeoUrl) other;
-        return otherSeoUrl.url.equals(this.url);
     }
 
     @Override
@@ -102,91 +91,16 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable{
         return isImage;
     }
 
-    /*only setters*/
-    public void setCanonical(String canonical) {
-        this.canonical = canonical;
-    }
-
-    public void setResponse(int response) {
-        this.response = response;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setKeywords(String keywords) {
-        this.keywords = keywords;
-    }
-
-    public void setCountH1(int countH1) {
-        this.countH1 = countH1;
-    }
-
-    public void setMetaRobots(String metaRobots) {
-        this.metaRobots = metaRobots;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public void setHaveSeoProblem(boolean seoProblem) {
-        this.haveSeoProblem = seoProblem;
-    }
-
-    /*Only getters*/
-    public String getURL() {
-        return url;
-    }
-
-    public String getCanonical() {
-        return canonical;
-    }
-
-    public int getResponse() {
-        return response;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getKeywords() {
-        return keywords;
-    }
-
-    public int getCountH1() {
-        return countH1;
-    }
-
-    public String getMetarobots() {
-        return metaRobots;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public Boolean getFlagSeoProblem(){
+    public Boolean isHaveSeoProblem( ){
         return haveSeoProblem;
     }
+
 }
 
 //Singleton and Director for set up SeOUrls
 class TunnerSeoURL {
-    private static TunnerSeoURL tunner;
-
+    private static volatile TunnerSeoURL tunner;
     private TunnerSeoURL() {
-
     }
 
     static TunnerSeoURL getTunner() {

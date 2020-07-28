@@ -4,8 +4,6 @@ import webspy.max_jd.utils.interfaces.Routine;
 
 import javax.swing.SwingWorker;
 
-
-//to do
 public class RoutineWorker extends SwingWorker<Void,Void> {
     private Routine routine;
 
