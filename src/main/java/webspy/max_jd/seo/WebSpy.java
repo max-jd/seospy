@@ -3,9 +3,11 @@ package webspy.max_jd.seo;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
-import webspy.max_jd.seo.newStructure.SeoEntity;
-import webspy.max_jd.seo.newStructure.SeoImage;
-import webspy.max_jd.seo.newStructure.SeoWebPage;
+import webspy.max_jd.seo.entities.SeoEntity;
+import webspy.max_jd.seo.entities.SeoWebImage;
+import webspy.max_jd.seo.entities.SeoWebPage;
+import webspy.max_jd.seo.util.SeoUrlValidator;
+import webspy.max_jd.seo.util.TunnerSeoUrl;
 import webspy.max_jd.utils.ReadWrite;
 import webspy.max_jd.utils.RoutineWorker;
 import webspy.max_jd.utils.interfaces.Routine;
@@ -1090,7 +1092,7 @@ public class WebSpy extends JFrame {
                                             potentialNewUrl = parsingHtmlPage.getFullyQualifiedUrl(((HtmlLink)singleAnchor).getHrefAttribute().toString()).toString();
 
                                         if(dequeSeoUrls.contains(new SeoWebPage(potentialNewUrl)))
-                                                //|| imagesSeoUrls.contains(new SeoImage(potentialNewUrl, true)))
+                                                //|| imagesSeoUrls.contains(new SeoWebImage(potentialNewUrl, true)))
                                         {
                                             continue;
                                         }
@@ -1204,7 +1206,7 @@ public class WebSpy extends JFrame {
         }
 
         private void handleImageFromNotHtmlTagImg(String imageFromTagA, HtmlPage page) {
-            SeoEntity seoUrlToImage = new SeoImage(imageFromTagA, true);
+            SeoEntity seoUrlToImage = new SeoWebImage(imageFromTagA, true);
             SeoEntity.cacheContentTypePages.putIfAbsent(imageFromTagA, validator.getContentType(imageFromTagA));
             tunner.tunne(seoUrlToImage, page);
             seoUrlToImage.analyzeUrl();
@@ -1247,7 +1249,7 @@ public class WebSpy extends JFrame {
             }
 
             for(String ordinaryUrlOfImage : setOfImage){
-                SeoEntity seoUrlImage = new SeoImage(ordinaryUrlOfImage, true);
+                SeoEntity seoUrlImage = new SeoWebImage(ordinaryUrlOfImage, true);
                 tunner.tunne(seoUrlImage, parsingPage);
                 seoUrlImage.analyzeUrl();
 

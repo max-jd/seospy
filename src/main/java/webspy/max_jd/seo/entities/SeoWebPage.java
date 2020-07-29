@@ -1,20 +1,36 @@
-package webspy.max_jd.seo.newStructure;
+package webspy.max_jd.seo.entities;
 
 public class SeoWebPage extends SeoEntity {
 
 
     public SeoWebPage(String url) {
+
         super(url);
+
     }
 
 
     @Override
     public void analyzeUrl() {
+
         if((countH1 != 0) || (response != 200)) {
             haveSeoProblem = true;
         } else {
             haveSeoProblem = false;
         }
+
+    }
+
+
+    @Override
+    public boolean equals(Object another) {
+
+        if(super.equals(another)) {
+            return another instanceof SeoWebPage;
+        }
+
+        return false;
+
     }
 
 

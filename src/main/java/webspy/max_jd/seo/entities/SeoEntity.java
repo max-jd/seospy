@@ -1,4 +1,4 @@
-package webspy.max_jd.seo.newStructure;
+package webspy.max_jd.seo.entities;
 
 import lombok.*;
 
@@ -61,6 +61,15 @@ abstract public class SeoEntity implements Comparable<SeoEntity> {
 
     public static Boolean isImage(SeoEntity seoEntity) {
         return seoEntity.isImage;
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if (other == null) return false;
+        if(other == this) return true;
+        if(!(other instanceof SeoEntity))return false;
+        SeoEntity otherSeoUrl = (SeoEntity) other;
+        return otherSeoUrl.url.equals(this.url);
     }
 
 

@@ -1,7 +1,7 @@
 package webspy.max_jd.utils.interfaces;
 
 
-import webspy.max_jd.seo.newStructure.SeoEntity;
+import webspy.max_jd.seo.entities.SeoEntity;
 
 import java.io.File;
 import java.util.Deque;

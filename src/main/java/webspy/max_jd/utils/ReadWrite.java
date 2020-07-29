@@ -2,7 +2,7 @@ package webspy.max_jd.utils;
 
 import org.apache.commons.lang3.ArrayUtils;
 import webspy.max_jd.seo.SeoUrl;
-import webspy.max_jd.seo.newStructure.SeoEntity;
+import webspy.max_jd.seo.entities.SeoEntity;
 import webspy.max_jd.utils.interfaces.Exporter;
 import webspy.max_jd.utils.interfaces.Loader;
 import webspy.max_jd.utils.interfaces.Saver;

@@ -1,9 +1,10 @@
-package webspy.max_jd.seo;
+package webspy.max_jd.seo.util;
 
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import webspy.max_jd.seo.newStructure.SeoEntity;
+import webspy.max_jd.seo.SeoUrl;
+import webspy.max_jd.seo.entities.SeoEntity;
 
 //Singleton and Director for set up SeOUrls
 public class TunnerSeoUrl {
@@ -11,13 +12,13 @@ public class TunnerSeoUrl {
         private TunnerSeoUrl() {
         }
 
-        static TunnerSeoUrl getTunner() {
+        public static TunnerSeoUrl getTunner() {
             if (tunner == null)
                 return tunner = new TunnerSeoUrl();
             return tunner;
         }
 
-        SeoEntity tunne(SeoEntity url, HtmlPage page) {
+        public SeoEntity tunne(SeoEntity url, HtmlPage page) {
             if(SeoEntity.isImage(url)) {
                 setResponse(url, page);
                 setContentType(url);
