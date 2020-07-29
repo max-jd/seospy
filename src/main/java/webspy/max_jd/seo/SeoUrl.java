@@ -1,8 +1,5 @@
 package webspy.max_jd.seo;
 
-import com.gargoylesoftware.htmlunit.html.DomNodeList;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import lombok.*;
 
 import java.io.Serializable;
@@ -18,16 +15,16 @@ import java.util.Map;
 public class SeoUrl implements Comparable<SeoUrl>, Serializable {
     @NonNull
     private final String  url;
-    private String  canonical;
-    private int     response;
-    private String  title;
-    private String  description;
-    private String  keywords;
-    private int     countH1;
-    private String  metaRobots;
-    private String  contentType;
+    private String        canonical;
+    private int           response;
+    private String        title;
+    private String        description;
+    private String        keywords;
+    private int           countH1;
+    private String        metaRobots;
+    private String        contentType;
 
-    private Boolean haveSeoProblem;
+    private Boolean       haveSeoProblem;
     @NonNull
     private final boolean isImage;
 
@@ -97,6 +94,8 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable {
 
 }
 
+/*
+
 //Singleton and Director for set up SeOUrls
 class TunnerSeoURL {
     private static volatile TunnerSeoURL tunner;
@@ -134,10 +133,12 @@ class TunnerSeoURL {
         DomNodeList<HtmlElement> domElements = page.getHead().getElementsByTagName("link");
 
         for (HtmlElement el : domElements) {
-           /* //if elements's parent equals script or noscript element - then we don't need it
+           */
+/* //if elements's parent equals script or noscript element - then we don't need it
             if(el.getParentNode().toString().contains("script")){
                 continue;
-            }*/
+            }*//*
+
             if (el.getAttribute("rel").equalsIgnoreCase("canonical")) {
                 String href = el.getAttribute("href");
                 seoUrl.setCanonical(href);
@@ -192,3 +193,4 @@ class TunnerSeoURL {
     }
 }
 
+*/

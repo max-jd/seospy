@@ -1,6 +1,6 @@
 package webspy.max_jd.seo;
 
-public enum StateSEOSpy {
+public enum StateSeoSpy {
     NOT_RUN_YET,
     RUNNING,
     PAUSED,

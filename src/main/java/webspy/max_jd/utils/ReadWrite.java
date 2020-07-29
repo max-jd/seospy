@@ -2,6 +2,7 @@ package webspy.max_jd.utils;
 
 import org.apache.commons.lang3.ArrayUtils;
 import webspy.max_jd.seo.SeoUrl;
+import webspy.max_jd.seo.newStructure.SeoEntity;
 import webspy.max_jd.utils.interfaces.Exporter;
 import webspy.max_jd.utils.interfaces.Loader;
 import webspy.max_jd.utils.interfaces.Saver;
@@ -17,7 +18,7 @@ public class ReadWrite implements Exporter, Loader, Saver {
     private String extensionLoad = ".ser";
     private String extensionSave = ".ser";
 
-    public void export(Deque<SeoUrl> dequeUrls, Set<SeoUrl> imagesSet, File fileToWrite) {
+    public void export(Deque<SeoEntity> dequeUrls, Set<SeoEntity> imagesSet, File fileToWrite) {
         SeoUrl[] arraySeoUrls = new SeoUrl[dequeUrls.size()];
         dequeUrls.toArray(arraySeoUrls);
         SeoUrl[] arraySeoImages = new SeoUrl[imagesSet.size()];
@@ -27,22 +28,22 @@ public class ReadWrite implements Exporter, Loader, Saver {
         ExcelWriter.writeToFile(fileToWrite.toPath(), joinedSeoArray);
     }
 
-    public void loadFrom(Deque<SeoUrl> dequeUrls, Set<SeoUrl> imagesSet, File fileFrom) throws IOException, ClassNotFoundException {
+    public void loadFrom(Deque<SeoEntity> dequeUrls, Set<SeoEntity> imagesSet, File fileFrom) throws IOException, ClassNotFoundException {
         try(FileInputStream fileInputStream = new FileInputStream(fileFrom);
             ObjectInputStream inStreamOb = new ObjectInputStream(fileInputStream)) {
 
-            Deque<SeoUrl> tempCopyDeque = (Deque)inStreamOb.readObject();
+            Deque<SeoEntity> tempCopyDeque = (Deque)inStreamOb.readObject();
             dequeUrls.addAll(tempCopyDeque);
-            Set<SeoUrl> tempCopySet = (Set<SeoUrl>) inStreamOb.readObject();
+            Set<SeoEntity> tempCopySet = (Set<SeoEntity>) inStreamOb.readObject();
             imagesSet.addAll(tempCopySet);
-            SeoUrl.statisticLinksOn = (Map<String, HashSet<String>>) inStreamOb.readObject();
-            SeoUrl.statisticLinksOut = (Map<String, HashSet<String>>)inStreamOb.readObject();
-            SeoUrl.externalLinks = (Map<String, HashSet<String>>) inStreamOb.readObject();
-            SeoUrl.cacheContentTypePages = (Map<String,String>) inStreamOb.readObject();
+            SeoEntity.statisticLinksOn = (Map<String, HashSet<String>>) inStreamOb.readObject();
+            SeoEntity.statisticLinksOut = (Map<String, HashSet<String>>)inStreamOb.readObject();
+            SeoEntity.externalLinks = (Map<String, HashSet<String>>) inStreamOb.readObject();
+            SeoEntity.cacheContentTypePages = (Map<String,String>) inStreamOb.readObject();
         }
     }
 
-    public void saveTo(Deque<SeoUrl> dequeUrls, Set<SeoUrl> imagesSet, File fileTo) throws IOException, ClassNotFoundException {
+    public void saveTo(Deque<SeoEntity> dequeUrls, Set<SeoEntity> imagesSet, File fileTo) throws IOException, ClassNotFoundException {
 
        /* if(!fileTo.exists()){
             fileTo.createNewFile();
@@ -51,10 +52,10 @@ public class ReadWrite implements Exporter, Loader, Saver {
             ObjectOutputStream objectsOutput = new ObjectOutputStream(fileOut)) {
                 objectsOutput.writeObject(dequeUrls);
                 objectsOutput.writeObject(imagesSet);
-                objectsOutput.writeObject(SeoUrl.statisticLinksOn);
-                objectsOutput.writeObject(SeoUrl.statisticLinksOut);
-                objectsOutput.writeObject(SeoUrl.externalLinks);
-                objectsOutput.writeObject(SeoUrl.cacheContentTypePages);
+                objectsOutput.writeObject(SeoEntity.statisticLinksOn);
+                objectsOutput.writeObject(SeoEntity.statisticLinksOut);
+                objectsOutput.writeObject(SeoEntity.externalLinks);
+                objectsOutput.writeObject(SeoEntity.cacheContentTypePages);
             }
         }
 

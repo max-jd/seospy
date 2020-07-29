@@ -8,12 +8,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class SeoUrlValidator extends UrlValidator {
+
+
     private String host;
+
+
 
     public SeoUrlValidator(String host, String[] schemes, long options) {
         super(schemes, options);
         this.host = host;
     }
+
+
 
     public boolean isSameHost(URL url) {
         URL urlHost = null;
@@ -31,17 +37,24 @@ public class SeoUrlValidator extends UrlValidator {
         return url.toString().contains("#");
     }
 
+
+
     public boolean isImage(String url) {
         String lowerCase = url.toLowerCase();
         return  lowerCase.endsWith(".png") || lowerCase.endsWith(".jpg") ||
                 lowerCase.endsWith(".gif") || lowerCase.endsWith((".jpeg"));
     }
 
+
+
     public boolean isSchemeHttpOrHttps(String url) {
         return url.startsWith("http");
     }
 
+
+
     public String getContentType(String url) {
+
 
         String contentType = "";
         try {
@@ -62,6 +75,7 @@ public class SeoUrlValidator extends UrlValidator {
         }
          return contentType.toLowerCase();
     }
+
 
     public boolean isUrlValid(URL url) {
         return super.isValid(url.toString());

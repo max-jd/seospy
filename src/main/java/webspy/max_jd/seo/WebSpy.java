@@ -3,7 +3,9 @@ package webspy.max_jd.seo;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
-import org.apache.commons.validator.routines.UrlValidator;
+import webspy.max_jd.seo.newStructure.SeoEntity;
+import webspy.max_jd.seo.newStructure.SeoImage;
+import webspy.max_jd.seo.newStructure.SeoWebPage;
 import webspy.max_jd.utils.ReadWrite;
 import webspy.max_jd.utils.RoutineWorker;
 import webspy.max_jd.utils.interfaces.Routine;
@@ -36,10 +38,10 @@ import java.util.logging.Logger;
 public class WebSpy extends JFrame {
     private List<URL> pages;
     private Spider spider;
-    private Deque<SeoUrl> dequeSeoUrls;
-    private Set<SeoUrl> imagesSeoUrls;
+    private Deque<SeoEntity> dequeSeoUrls;
+    private Set<SeoEntity> imagesSeoUrls;
 
-    private TunnerSeoURL tunner;
+    private TunnerSeoUrl tunner;
     private SeoUrlValidator validator;
 
     public static final org.apache.log4j.Logger logToFile =
@@ -63,9 +65,24 @@ public class WebSpy extends JFrame {
     private int tabPreviousIndex;
     private int tabCurrentIndex;
 
-    private volatile StateSEOSpy state = StateSEOSpy.NOT_RUN_YET;
+    private volatile StateSeoSpy state = StateSeoSpy.NOT_RUN_YET;
     //The lock for waking up thread for updating the table concurrently with scanning
     private final Object lock = new Object();
+
+
+    public WebSpy() {
+        logToFile.info("The program was started.");
+        logToFile.info("Initialization WebSpy...");
+        pages = new java.util.ArrayList<URL>();
+        dequeSeoUrls = new LinkedList<>();
+        tunner = TunnerSeoUrl.getTunner();
+        imagesSeoUrls = new HashSet<>();
+        initGUI();
+        logToFile.info("WebSpy was initialized.");
+
+        inputMainPageToStart.setText("https://conditionservice.com.ua/"); //detele after test
+    }
+
 
     private void createProgressDialog() {
         progressDialog = new JDialog(this,true);
@@ -208,7 +225,7 @@ public class WebSpy extends JFrame {
         stopButton.setEnabled(false);
 
         pauseButton.addActionListener((actionEve) -> {
-            state = StateSEOSpy.PAUSED;
+            state = StateSeoSpy.PAUSED;
             pauseButton.setEnabled(false);
             playButton.setEnabled(true);
             progressBarUI.setVisible(false);
@@ -217,7 +234,7 @@ public class WebSpy extends JFrame {
         });
 
         stopButton.addActionListener((action) -> {
-            state = StateSEOSpy.STOPPED;
+            state = StateSeoSpy.STOPPED;
             stopButton.setEnabled(false);
             pauseButton.setEnabled(false);
             playButton.setEnabled(true);
@@ -228,11 +245,11 @@ public class WebSpy extends JFrame {
 
         playButton.addActionListener((actionEvent) -> {
             //if the program was stopped or scanning was ended and need start form beginning - reset the all previous result
-            if(state.equals(StateSEOSpy.STOPPED) || state.equals(StateSEOSpy.SCANNING_ENDED)) {
+            if(state.equals(StateSeoSpy.STOPPED) || state.equals(StateSeoSpy.SCANNING_ENDED)) {
                 ((CustomizedDefaultTableModel)mainTable.getModel()).setRowCount(0);
-                SeoUrl.setNewStatistics();
-                dequeSeoUrls = new LinkedList<SeoUrl>();
-                imagesSeoUrls = new HashSet<SeoUrl>();
+                SeoEntity.setNewStatistics();
+                dequeSeoUrls = new LinkedList<>();
+                imagesSeoUrls = new HashSet<>();
             }
             progressBarUI.setVisible(true);
             pauseButton.setEnabled(true);
@@ -586,7 +603,7 @@ public class WebSpy extends JFrame {
         tableModel.setRowCount(0);
         int numberOfPage = 1;
 
-        for(SeoUrl seoUrl : dequeSeoUrls){
+        for(SeoEntity seoUrl : dequeSeoUrls){
             data[0] = numberOfPage++;
             data[1] = seoUrl.getUrl();
             data[2] = seoUrl.getCanonical();
@@ -598,14 +615,14 @@ public class WebSpy extends JFrame {
             data[8] = seoUrl.getContentType();
             data[9] = seoUrl.getMetaRobots();
 
-            if(SeoUrl.externalLinks.get((seoUrl.getUrl())) != null) {
-                data[10] = SeoUrl.externalLinks.get((seoUrl.getUrl())).size();
+            if(SeoEntity.externalLinks.get((seoUrl.getUrl())) != null) {
+                data[10] = SeoEntity.externalLinks.get((seoUrl.getUrl())).size();
             } else {
                 data[10] = 0;
             }
 
-            if(SeoUrl.statisticLinksOn.get(seoUrl.getUrl()) != null) {
-                data[11] = SeoUrl.statisticLinksOn.get(seoUrl.getUrl()).size();
+            if(SeoEntity.statisticLinksOn.get(seoUrl.getUrl()) != null) {
+                data[11] = SeoEntity.statisticLinksOn.get(seoUrl.getUrl()).size();
             } else {
                 data[11] = -1;
             }
@@ -617,24 +634,29 @@ public class WebSpy extends JFrame {
             }
             */
 
-            if(SeoUrl.statisticLinksOut.get(seoUrl.getUrl()) != null) {
-                data[12] = SeoUrl.statisticLinksOut.get(seoUrl.getUrl()).size();
+            if(SeoEntity.statisticLinksOut.get(seoUrl.getUrl()) != null) {
+                data[12] = SeoEntity.statisticLinksOut.get(seoUrl.getUrl()).size();
             } else {
                 data[12] = -1;
             }
-            data[13] = seoUrl.isHaveSeoProblem().toString();
+
+            if(seoUrl.isHaveSeoProblem() != null) {
+                data[13] = seoUrl.isHaveSeoProblem().toString();
+            } else {
+                data[13] = "in progress";
+            }
 
             tableModel.addRow(data);
         }
 
         data = new Object[14];
 
-        for(SeoUrl seoImage : imagesSeoUrls) {
+        for(SeoEntity seoImage : imagesSeoUrls) {
             data[0]  = numberOfPage++;
             data[1]  = seoImage.getUrl();
             data[3]  = seoImage.getResponse();
             data[8]  = seoImage.getContentType();
-            data[11] = SeoUrl.statisticLinksOn.get(seoImage.getUrl()).size();
+            data[11] = SeoEntity.statisticLinksOn.get(seoImage.getUrl()).size();
             data[13] = seoImage.isHaveSeoProblem().toString();
 
             tableModel.addRow(data);
@@ -703,16 +725,6 @@ public class WebSpy extends JFrame {
         }
     }
 
-    public WebSpy() {
-        logToFile.info("The program was started.");
-        logToFile.info("Initialization WebSpy...");
-        pages = new java.util.ArrayList<URL>();
-        dequeSeoUrls = new LinkedList<>();
-        tunner = TunnerSeoURL.getTunner();
-        imagesSeoUrls = new HashSet<>();
-        initGUI();
-        logToFile.info("WebSpy was initialized.");
-    }
 
     //create and set up popups menu on the table
     private void setUpPopupMenu(JTable table) {
@@ -765,23 +777,23 @@ public class WebSpy extends JFrame {
                 String selectedUrl = (String) table.getModel().getValueAt(modelSelectedRow, 1);
                 selectedUrlTextField.setText(selectedUrl);
 
-                Set<String> linksOn = SeoUrl.statisticLinksOn.get(selectedUrl);
+                Set<String> linksOn = SeoEntity.statisticLinksOn.get(selectedUrl);
                 for(String s : linksOn) {
                     linksToPageTextArea.append(s + System.lineSeparator());
                 }
 
-                Set<String> linksOut = SeoUrl.statisticLinksOut.get(selectedUrl);
+                Set<String> linksOut = SeoEntity.statisticLinksOut.get(selectedUrl);
                 if(linksOut != null) {
                     for(String s : linksOut){
                         linksFromPageTextArea.append(s + System.lineSeparator());
                     }
                 }
 
-                for(SeoUrl s : dequeSeoUrls){
+                for(SeoEntity s : dequeSeoUrls){
                     if (s.getUrl().equals(selectedUrl)) {
                         String columnExternalLinks = "";
-                        if(SeoUrl.externalLinks.get(s.getUrl()) != null) {
-                            for (String externalUrl : SeoUrl.externalLinks.get(s.getUrl()))
+                        if(SeoEntity.externalLinks.get(s.getUrl()) != null) {
+                            for (String externalUrl : SeoEntity.externalLinks.get(s.getUrl()))
                                 columnExternalLinks += externalUrl + System.lineSeparator();
                         }
                         externalLinksTextArea.setText(columnExternalLinks);
@@ -861,10 +873,10 @@ public class WebSpy extends JFrame {
         Thread updater = new Thread() {
             @Override
             public void run() {
-                while(state == StateSEOSpy.RUNNING) {
+                while(state == StateSeoSpy.RUNNING) {
                     SwingUtilities.invokeLater(() -> updateTable());
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(3000);
                     } catch(InterruptedException ex) {
                         System.out.println(ex.getClass().getName() + ex.getStackTrace());
                         ex.printStackTrace();
@@ -904,7 +916,7 @@ public class WebSpy extends JFrame {
             logToFile.info("Spider was initialized.");
         }
 
-        public void scanWithSets() {
+ /*       public void scanWithSets() {
             logToFile.info("Scanning website...");
             System.out.println("Start the program");
             Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
@@ -1013,24 +1025,24 @@ public class WebSpy extends JFrame {
 
         //    checkedPages.stream().forEach(System.out::println);
             logToFile.info("The Website was scanned.");
-        }
+        }*/
 
 
        public void scanWithDeque() {
             logToFile.info("Scanning website...");
-            if(state == StateSEOSpy.NOT_RUN_YET || state == StateSEOSpy.SCANNING_ENDED || state == StateSEOSpy.STOPPED) {
+            if(state == StateSeoSpy.NOT_RUN_YET || state == StateSeoSpy.SCANNING_ENDED || state == StateSeoSpy.STOPPED) {
                 SwingWorker sw = new SwingWorker() {
                     @Override
                     protected Void doInBackground() {
                         // if program have been paused and was pressed the play button - waking up thread for continue scanning
-                        if(state == StateSEOSpy.PAUSED) {
-                            state = StateSEOSpy.RUNNING;
+                        if(state == StateSeoSpy.PAUSED) {
+                            state = StateSeoSpy.RUNNING;
                             synchronized(lock) {
                                 lock.notify();
                             }
                             createConcurrentUpdaterForTable();
                         }  else { //else start scanning
-                            state = StateSEOSpy.RUNNING;
+                            state = StateSeoSpy.RUNNING;
 
                             //Create a thread for updating table
                             createConcurrentUpdaterForTable();
@@ -1047,15 +1059,15 @@ public class WebSpy extends JFrame {
                                 HtmlPage parsingHtmlPage = wc.getPage(startingURL);
                                 System.out.println("Starting URL is " + startingURL.toString());
                                 logToFile.info("Starting URL is " + parsingHtmlPage.getUrl().toString());
-                                SeoUrl.statisticLinksOut.put(parsingHtmlPage.getUrl().toString(), new HashSet<String>());
-                                SeoUrl.cacheContentTypePages.put(parsingHtmlPage.getUrl().toString(), validator.getContentType(parsingHtmlPage.getUrl().toString()));
+                                SeoEntity.statisticLinksOut.put(parsingHtmlPage.getUrl().toString(), new HashSet<String>());
+                                SeoEntity.cacheContentTypePages.put(parsingHtmlPage.getUrl().toString(), validator.getContentType(parsingHtmlPage.getUrl().toString()));
                                 System.out.println(parsingHtmlPage.getUrl().toString());
                                 do {
                                     spider.handleImages(parsingHtmlPage);
 
-                                    SeoUrl seoUrlForParsingPage = new SeoUrl(parsingHtmlPage.getUrl().toString());
+                                    SeoEntity seoUrlForParsingPage = new SeoWebPage(parsingHtmlPage.getUrl().toString());
                                     tunner.tunne(seoUrlForParsingPage, parsingHtmlPage);
-                                    seoUrlForParsingPage.analyzeURL();
+                                    seoUrlForParsingPage.analyzeUrl();
 
                                     dequeSeoUrls.addFirst(seoUrlForParsingPage);
 
@@ -1063,7 +1075,7 @@ public class WebSpy extends JFrame {
                                     List<HtmlElement> anchorsParsingPage = parsingHtmlPage.getHead().getByXPath(
                                             "//a[@href and string-length(@href)!=0] | //link[@href and string-length(@href)!=0]");
 
-                                    for(HtmlElement singleAnchor: anchorsParsingPage) {
+                                    for(HtmlElement singleAnchor : anchorsParsingPage) {
                                         //if a user pressed some button - reacting on it
                                         ifPausedThenWait();
                                         if(wasStopped()) {
@@ -1077,23 +1089,25 @@ public class WebSpy extends JFrame {
                                         else if(singleAnchor instanceof HtmlLink)
                                             potentialNewUrl = parsingHtmlPage.getFullyQualifiedUrl(((HtmlLink)singleAnchor).getHrefAttribute().toString()).toString();
 
-                                        if(dequeSeoUrls.contains(new SeoUrl(potentialNewUrl))) {
+                                        if(dequeSeoUrls.contains(new SeoWebPage(potentialNewUrl)))
+                                                //|| imagesSeoUrls.contains(new SeoImage(potentialNewUrl, true)))
+                                        {
                                             continue;
                                         }
 
                                         //check to see if potentialNewUrl not equal startingURL without backslash
                                         if (potentialNewUrl.equals((startingURL.toString()).substring(0, startingURL.toString().length() - 1))) {
                                             //add statistics
-                                            SeoUrl.statisticLinksOut.putIfAbsent(parsingHtmlPage.getUrl().toString(), new HashSet<String>());
-                                            SeoUrl.statisticLinksOut.get(parsingHtmlPage.getUrl().toString()).add(potentialNewUrl.toString());
-                                            SeoUrl.statisticLinksOn.putIfAbsent(potentialNewUrl.toString(), new HashSet<String>());
-                                            SeoUrl.statisticLinksOn.get(potentialNewUrl.toString()).add(parsingHtmlPage.getUrl().toString());
-                                            SeoUrl.cacheContentTypePages.put(potentialNewUrl, validator.getContentType(potentialNewUrl));
+                                            SeoEntity.statisticLinksOut.putIfAbsent(parsingHtmlPage.getUrl().toString(), new HashSet<String>());
+                                            SeoEntity.statisticLinksOut.get(parsingHtmlPage.getUrl().toString()).add(potentialNewUrl.toString());
+                                            SeoEntity.statisticLinksOn.putIfAbsent(potentialNewUrl.toString(), new HashSet<String>());
+                                            SeoEntity.statisticLinksOn.get(potentialNewUrl.toString()).add(parsingHtmlPage.getUrl().toString());
+                                            SeoEntity.cacheContentTypePages.put(potentialNewUrl, validator.getContentType(potentialNewUrl));
 
-                                            SeoUrl potentialNewSeoUrl = new SeoUrl(potentialNewUrl);
+                                            SeoEntity potentialNewSeoUrl = new SeoWebPage(potentialNewUrl);
                                             HtmlPage realUrlForSettingSeoUrl = wc.getPage(potentialNewUrl);
                                             tunner.tunne(potentialNewSeoUrl, realUrlForSettingSeoUrl);
-                                            potentialNewSeoUrl.analyzeURL();
+                                            potentialNewSeoUrl.analyzeUrl();
                                             dequeSeoUrls.addFirst(potentialNewSeoUrl);
                                             continue;
                                         }
@@ -1102,8 +1116,8 @@ public class WebSpy extends JFrame {
                                             //check if the link lead to external site
                                             if(! validator.isSameHost(new URL(potentialNewUrl) )) {
                                                 //if it is, then add it for statistics and continue for new parsing page
-                                                SeoUrl.externalLinks.putIfAbsent(seoUrlForParsingPage.getUrl(), new HashSet<String>());
-                                                SeoUrl.externalLinks.get(seoUrlForParsingPage.getUrl()).add(potentialNewUrl);
+                                                SeoEntity.externalLinks.putIfAbsent(seoUrlForParsingPage.getUrl(), new HashSet<String>());
+                                                SeoEntity.externalLinks.get(seoUrlForParsingPage.getUrl()).add(potentialNewUrl);
                                                 continue;
                                             }
 
@@ -1112,23 +1126,23 @@ public class WebSpy extends JFrame {
                                                 potentialNewUrl = potentialNewUrl.substring(0, potentialNewUrl.indexOf('#'));
 
                                             //caching if it is a new page
-                                            SeoUrl.cacheContentTypePages.putIfAbsent(potentialNewUrl, validator.getContentType(potentialNewUrl));
+                                            SeoEntity.cacheContentTypePages.putIfAbsent(potentialNewUrl, validator.getContentType(potentialNewUrl));
 
                                             //if it is an image (or something else) - put a link in the statistics Map and continue.
                                             // An image (or something else)  can't refer to another page.
-                                            if(! (SeoUrl.cacheContentTypePages.get(potentialNewUrl).startsWith("text/html") )) {
-                                                if(SeoUrl.cacheContentTypePages.get(potentialNewUrl).startsWith("image/")) {
+                                            if(! (SeoEntity.cacheContentTypePages.get(potentialNewUrl).startsWith("text/html") )) {
+                                                if(SeoEntity.cacheContentTypePages.get(potentialNewUrl).startsWith("image/")) {
                                                     spider.handleImageFromNotHtmlTagImg(potentialNewUrl, parsingHtmlPage);
                                                 }
                                                 continue;
                                             }
 
-                                            SeoUrl.statisticLinksOut.putIfAbsent(parsingHtmlPage.getUrl().toString(), new HashSet<String>());
-                                            SeoUrl.statisticLinksOut.get(parsingHtmlPage.getUrl().toString()).add(potentialNewUrl);
-                                            SeoUrl.statisticLinksOn.putIfAbsent(potentialNewUrl.toString(), new HashSet<String>());
-                                            SeoUrl.statisticLinksOn.get(potentialNewUrl.toString()).add(parsingHtmlPage.getUrl().toString());
+                                            SeoEntity.statisticLinksOut.putIfAbsent(parsingHtmlPage.getUrl().toString(), new HashSet<String>());
+                                            SeoEntity.statisticLinksOut.get(parsingHtmlPage.getUrl().toString()).add(potentialNewUrl);
+                                            SeoEntity.statisticLinksOn.putIfAbsent(potentialNewUrl.toString(), new HashSet<String>());
+                                            SeoEntity.statisticLinksOn.get(potentialNewUrl.toString()).add(parsingHtmlPage.getUrl().toString());
 
-                                            SeoUrl tempSeoUrl = new SeoUrl(potentialNewUrl);
+                                            SeoEntity tempSeoUrl = new SeoWebPage(potentialNewUrl);
                                             if (! (dequeSeoUrls.contains(tempSeoUrl))) {
                                                 System.out.print('.');
                                                 logToFile.info("Adding new URL for scanning: " + tempSeoUrl.toString());
@@ -1153,14 +1167,14 @@ public class WebSpy extends JFrame {
                                 System.out.println(ex.getClass().getName() + ex.getStackTrace());
                                 ex.printStackTrace();
                             }
-                            state = StateSEOSpy.SCANNING_ENDED;
+                            state = StateSeoSpy.SCANNING_ENDED;
                             wc.close();
                         }
                         return null;
                     }
                     @Override
                     protected void done(){
-                        if(state == StateSEOSpy.SCANNING_ENDED){
+                        if(state == StateSeoSpy.SCANNING_ENDED){
                             mainMenu.getItem(0).setEnabled(true);// it does exportMenuItem.setEnabled(true);
                             ((JMenu)(mainMenu.getMenuComponent(1))).getItem(0).setEnabled(true);//it does saveProjectItem.setEnabled(true)
                             ((JButton) kitButtonsPanel.getComponent(1)).setEnabled(true); // it does playButton.setEnabled(true);
@@ -1175,12 +1189,12 @@ public class WebSpy extends JFrame {
 
                 };
                 sw.execute();
-            } else if(state == StateSEOSpy.PAUSED) {
+            } else if(state == StateSeoSpy.PAUSED) {
                 Runnable runToNotify = new Runnable() {
                     @Override
                     public void run(){
                         synchronized(lock) {
-                            state = StateSEOSpy.RUNNING;
+                            state = StateSeoSpy.RUNNING;
                             lock.notify();
                         }
                     }
@@ -1190,21 +1204,21 @@ public class WebSpy extends JFrame {
         }
 
         private void handleImageFromNotHtmlTagImg(String imageFromTagA, HtmlPage page) {
-            SeoUrl seoUrlToImage = new SeoUrl(imageFromTagA, true);
-            SeoUrl.cacheContentTypePages.putIfAbsent(imageFromTagA, validator.getContentType(imageFromTagA));
+            SeoEntity seoUrlToImage = new SeoImage(imageFromTagA, true);
+            SeoEntity.cacheContentTypePages.putIfAbsent(imageFromTagA, validator.getContentType(imageFromTagA));
             tunner.tunne(seoUrlToImage, page);
-            seoUrlToImage.analyzeURL();
+            seoUrlToImage.analyzeUrl();
 
-            SeoUrl.statisticLinksOut.putIfAbsent(page.getUrl().toString(), new HashSet<String>());
-            SeoUrl.statisticLinksOut.get(page.getUrl().toString()).add(imageFromTagA);
-            SeoUrl.statisticLinksOn.putIfAbsent(seoUrlToImage.toString(), new HashSet<String>());
-            SeoUrl.statisticLinksOn.get(seoUrlToImage.toString()).add(page.getUrl().toString());
+            SeoEntity.statisticLinksOut.putIfAbsent(page.getUrl().toString(), new HashSet<String>());
+            SeoEntity.statisticLinksOut.get(page.getUrl().toString()).add(imageFromTagA);
+            SeoEntity.statisticLinksOn.putIfAbsent(seoUrlToImage.toString(), new HashSet<String>());
+            SeoEntity.statisticLinksOn.get(seoUrlToImage.toString()).add(page.getUrl().toString());
             imagesSeoUrls.add(seoUrlToImage);
         }
 
         private void handleImages(HtmlPage parsingPage){
             DomNodeList<HtmlElement> listImages = parsingPage.getBody().getElementsByTagName("img");
-            Set<String> setOfImage = new HashSet();
+            Set<String> setOfImage = new HashSet<>();
 
             for(HtmlElement htmlElement : listImages) {
                 HtmlElement iSThereNoscript = htmlElement.getEnclosingElement("noscript");
@@ -1225,7 +1239,7 @@ public class WebSpy extends JFrame {
                 try {
                     String qualifiedUrl = parsingPage.getFullyQualifiedUrl(src).toString();
                     setOfImage.add(qualifiedUrl);
-                    SeoUrl.cacheContentTypePages.putIfAbsent(qualifiedUrl, validator.getContentType(qualifiedUrl));
+                    SeoEntity.cacheContentTypePages.putIfAbsent(qualifiedUrl, validator.getContentType(qualifiedUrl));
                 } catch(MalformedURLException ex){
                     System.out.println(ex.getClass().getName() + ex.getStackTrace());
                     ex.printStackTrace();
@@ -1233,14 +1247,14 @@ public class WebSpy extends JFrame {
             }
 
             for(String ordinaryUrlOfImage : setOfImage){
-                SeoUrl seoUrlImage = new SeoUrl(ordinaryUrlOfImage, true);
+                SeoEntity seoUrlImage = new SeoImage(ordinaryUrlOfImage, true);
                 tunner.tunne(seoUrlImage, parsingPage);
-                seoUrlImage.analyzeURL();
+                seoUrlImage.analyzeUrl();
 
-                seoUrlImage.statisticLinksOut.putIfAbsent(parsingPage.getUrl().toString(), new HashSet<String>());
-                seoUrlImage.statisticLinksOut.get(parsingPage.getUrl().toString()).add(seoUrlImage.toString());
-                SeoUrl.statisticLinksOn.putIfAbsent(seoUrlImage.toString(), new HashSet<String>());
-                SeoUrl.statisticLinksOn.get(seoUrlImage.toString()).add(parsingPage.getUrl().toString());
+                SeoEntity.statisticLinksOut.putIfAbsent(parsingPage.getUrl().toString(), new HashSet<String>());
+                SeoEntity.statisticLinksOut.get(parsingPage.getUrl().toString()).add(seoUrlImage.toString());
+                SeoEntity.statisticLinksOn.putIfAbsent(seoUrlImage.toString(), new HashSet<String>());
+                SeoEntity.statisticLinksOn.get(seoUrlImage.toString()).add(parsingPage.getUrl().toString());
                 imagesSeoUrls.add(seoUrlImage);
             }
         }
@@ -1248,12 +1262,12 @@ public class WebSpy extends JFrame {
 
     private void ifPausedThenWait() {
         synchronized(lock) {
-            while(state == StateSEOSpy.PAUSED) {
+            while(state == StateSeoSpy.PAUSED) {
                 try {
                     WebSpy.logToFile.info("Thread for scanning was stopped.");
                     lock.wait();
                     WebSpy.logToFile.info("Thread for scanning was woke up.");
-                   // state = StateSEOSpy.RUNNING;
+                   // state = StateSeoSpy.RUNNING;
                 } catch(InterruptedException ex) {
                     logToFile.error(ex.toString());
                     System.out.println(ex.getClass().getName() + ex.getStackTrace());
@@ -1265,7 +1279,7 @@ public class WebSpy extends JFrame {
     }
 
     private boolean wasStopped() {
-        return state == StateSEOSpy.STOPPED;
+        return state == StateSeoSpy.STOPPED;
     }
 }
 
