@@ -1,11 +1,11 @@
-package webspy.max_jd.utils;
+package seospy.max_jd.seo.util.serializ.impl;
 
 import org.apache.commons.lang3.ArrayUtils;
-import webspy.max_jd.seo.SeoUrl;
-import webspy.max_jd.seo.entities.SeoEntity;
-import webspy.max_jd.utils.interfaces.Exporter;
-import webspy.max_jd.utils.interfaces.Loader;
-import webspy.max_jd.utils.interfaces.Saver;
+import seospy.max_jd.seo.SeoUrl;
+import seospy.max_jd.seo.entities.SeoEntity;
+import seospy.max_jd.seo.util.serializ.interfaces.Exporter;
+import seospy.max_jd.seo.util.serializ.interfaces.Loader;
+import seospy.max_jd.seo.util.serializ.interfaces.Saver;
 
 import java.io.*;
 import java.util.Deque;

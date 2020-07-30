@@ -1,10 +1,10 @@
-package webspy.max_jd.seo.util;
+package seospy.max_jd.seo.util;
 
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import webspy.max_jd.seo.SeoUrl;
-import webspy.max_jd.seo.entities.SeoEntity;
+import seospy.max_jd.seo.SeoUrl;
+import seospy.max_jd.seo.entities.SeoEntity;
 
 //Singleton and Director for set up SeOUrls
 public class TunnerSeoUrl {

@@ -1,6 +1,6 @@
-package webspy.max_jd.utils;
+package seospy.max_jd.seo.util.serializ.impl;
 
-import webspy.max_jd.utils.interfaces.Routine;
+import seospy.max_jd.seo.util.Routine;
 
 import javax.swing.SwingWorker;
 

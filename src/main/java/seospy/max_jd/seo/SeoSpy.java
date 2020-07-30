@@ -1,16 +1,18 @@
-package webspy.max_jd.seo;
+package seospy.max_jd.seo;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
-import webspy.max_jd.seo.entities.SeoEntity;
-import webspy.max_jd.seo.entities.SeoWebImage;
-import webspy.max_jd.seo.entities.SeoWebPage;
-import webspy.max_jd.seo.util.SeoUrlValidator;
-import webspy.max_jd.seo.util.TunnerSeoUrl;
-import webspy.max_jd.utils.ReadWrite;
-import webspy.max_jd.utils.RoutineWorker;
-import webspy.max_jd.utils.interfaces.Routine;
+import seospy.max_jd.seo.entities.SeoEntity;
+import seospy.max_jd.seo.entities.SeoWebImage;
+import seospy.max_jd.seo.entities.SeoWebPage;
+import seospy.max_jd.seo.tableHelpers.CustomizedDefaultTableCellRenderer;
+import seospy.max_jd.seo.tableHelpers.CustomizedDefaultTableModel;
+import seospy.max_jd.seo.util.Routine;
+import seospy.max_jd.seo.util.SeoUrlValidator;
+import seospy.max_jd.seo.util.TunnerSeoUrl;
+import seospy.max_jd.seo.util.serializ.impl.ReadWrite;
+import seospy.max_jd.seo.util.serializ.impl.RoutineWorker;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -37,7 +39,9 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class WebSpy extends JFrame {
+public class SeoSpy extends JFrame {
+
+
     private List<URL> pages;
     private Spider spider;
     private Deque<SeoEntity> dequeSeoUrls;
@@ -47,7 +51,7 @@ public class WebSpy extends JFrame {
     private SeoUrlValidator validator;
 
     public static final org.apache.log4j.Logger logToFile =
-            org.apache.log4j.Logger.getLogger(WebSpy.class.getName());
+            org.apache.log4j.Logger.getLogger(SeoSpy.class.getName());
 
     private JProgressBar progressBarUI;
     private JDialog progressDialog;
@@ -68,19 +72,20 @@ public class WebSpy extends JFrame {
     private int tabCurrentIndex;
 
     private volatile StateSeoSpy state = StateSeoSpy.NOT_RUN_YET;
-    //The lock for waking up thread for updating the table concurrently with scanning
+    //The lock for waking up thread that update the table concurrently with scanning
     private final Object lock = new Object();
 
 
-    public WebSpy() {
+
+    public SeoSpy() {
         logToFile.info("The program was started.");
-        logToFile.info("Initialization WebSpy...");
-        pages = new java.util.ArrayList<URL>();
+        logToFile.info("Initialization SeoSpy...");
+        pages = new java.util.ArrayList<>();
         dequeSeoUrls = new LinkedList<>();
         tunner = TunnerSeoUrl.getTunner();
         imagesSeoUrls = new HashSet<>();
         initGUI();
-        logToFile.info("WebSpy was initialized.");
+        logToFile.info("SeoSpy was initialized.");
 
         inputMainPageToStart.setText("https://conditionservice.com.ua/"); //detele after test
     }
@@ -103,6 +108,7 @@ public class WebSpy extends JFrame {
         progressDialog.pack();
         progressDialog.setResizable(false);
     }
+
 
     private void showModalDialogProgress(RoutineWorker worker) {
         JDialog progressDialog = new JDialog(this, "", Dialog.ModalityType.APPLICATION_MODAL);
@@ -138,6 +144,7 @@ public class WebSpy extends JFrame {
         progressDialog.setResizable(false);
         progressDialog.setVisible(true);
     }
+
 
     private void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
@@ -186,7 +193,7 @@ public class WebSpy extends JFrame {
         JMenu helpMenu = new JMenu("Help");
         JMenuItem supportMenuItem = new JMenuItem("Support");
         supportMenuItem.addActionListener((actionEvent) -> {
-            JOptionPane.showMessageDialog(WebSpy.this, "To contact with me" + System.lineSeparator()
+            JOptionPane.showMessageDialog(SeoSpy.this, "To contact with me" + System.lineSeparator()
                             + "write to here pavlinich.maxim@gmail.com", "Support",
                     JOptionPane.PLAIN_MESSAGE);
         });
@@ -196,6 +203,7 @@ public class WebSpy extends JFrame {
 
         this.setJMenuBar(menuBar);
     }
+
 
     private void createButtons() {
         //getting images
@@ -264,11 +272,13 @@ public class WebSpy extends JFrame {
         });
     }
 
+
     private Object[] createColumnsByNames() {
         Object[] nameColumns = {"#", "URL", "Canonical", "Response", "Title", "Description", "Keywords",
                                 "H1", "Content-Type", "Meta-Robots", "Ex. links", "In links", "Out links", "Problem"};
         return nameColumns;
     }
+
 
     private void createMainTable( Object[][] rows, Object[] nameColumns){
        mainTable = new JTable(new CustomizedDefaultTableModel(rows, nameColumns)){
@@ -288,6 +298,7 @@ public class WebSpy extends JFrame {
                 };
             }};
     }
+
 
     private void settingMainTable(){
         mainTable.setAutoCreateRowSorter(true);
@@ -313,14 +324,14 @@ public class WebSpy extends JFrame {
                                 Desktop.getDesktop().browse(new URI(url));
                             } catch(URISyntaxException ex) {
                                 System.out.format("%s%n%s", "Oops! Something went wrong!", ex);
-                                JOptionPane.showMessageDialog(WebSpy.this, "Oops! Cannot open this link!",
+                                JOptionPane.showMessageDialog(SeoSpy.this, "Oops! Cannot open this link!",
                                         "Error: URISyntaxException" , JOptionPane.ERROR_MESSAGE);
-                                WebSpy.logToFile.error(ex.toString());
+                                SeoSpy.logToFile.error(ex.toString());
                             } catch(IOException ex) {
-                                JOptionPane.showMessageDialog(WebSpy.this, "Oops! Cannot open this link!",
+                                JOptionPane.showMessageDialog(SeoSpy.this, "Oops! Cannot open this link!",
                                         "Error: IOException", JOptionPane.ERROR_MESSAGE);
                                 System.out.format("%s%n%s", "Oops! Something went wrong!", ex);
-                                WebSpy.logToFile.error(ex.toString());
+                                SeoSpy.logToFile.error(ex.toString());
                             }
                         }
                     }
@@ -370,18 +381,20 @@ public class WebSpy extends JFrame {
         mainTable.getColumnModel().getColumn(0).setPreferredWidth(50);
     }
 
+
     private JTable createTabErrorTable() {
         JTable tableTabError = new JTable(mainTable.getModel());
         tableTabError.setAutoCreateRowSorter(true);
         tableTabError.getTableHeader().setReorderingAllowed(false);
 
-        tableTabError.setDefaultRenderer(Object.class, new ObjectDefaultTableCellRenderer());
-        tableTabError.setDefaultRenderer(Integer.class, new IntegerDefaultTableCellRenderer());
+        tableTabError.setDefaultRenderer(Object.class, new CustomizedDefaultTableCellRenderer());
+        tableTabError.setDefaultRenderer(Integer.class, new CustomizedDefaultTableCellRenderer());
 
         //object scrollForTableError will be got to the initGUI method
         JScrollPane scrollForTableError = new JScrollPane(tableTabError);
         return tableTabError;
     }
+
 
     private void settingFirstFilterTab(JTable tableFilterTabResult, JPanel jpFilterTabFirst){
         JTable tableFilterTab = new JTable();
@@ -437,6 +450,7 @@ public class WebSpy extends JFrame {
         });
     }
 
+
     private void namingTabs(String[] names, JPanel[] panels) {
         if(names.length != panels.length)
             throw new RuntimeException("Parameters of two arrays not equals.");
@@ -445,6 +459,7 @@ public class WebSpy extends JFrame {
             tabs.addTab(names[i], panels[i]);
         }
     }
+
 
     private void settingUpTabs(JTable tableTabError, JTable tableFilterTabResult, JPanel topPanel){
 
@@ -483,6 +498,7 @@ public class WebSpy extends JFrame {
             tabCurrentIndex = tabs.getSelectedIndex();
         });
     }
+
 
     //this - inherited methods
     public void initGUI() {
@@ -598,6 +614,7 @@ public class WebSpy extends JFrame {
         logToFile.info("GUI was initialized.");
     }
 
+
     private void updateTable() {
         logToFile.info("Updating table...");
         Object[] data = new Object[14];
@@ -670,6 +687,7 @@ public class WebSpy extends JFrame {
         logToFile.info("Table was updated.");
     }
 
+
     private void loadProject() {
         logToFile.info("Loading project");
         JFileChooser chooser = new JFileChooser(System.getProperty("user.home"));
@@ -694,6 +712,7 @@ public class WebSpy extends JFrame {
         }
         logToFile.info("Project was loaded.");
     }
+
 
     private void saveProject() {
         JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
@@ -737,7 +756,7 @@ public class WebSpy extends JFrame {
         exLinksMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                JDialog dialog = new JDialog(WebSpy.this, "Our project", true);
+                JDialog dialog = new JDialog(SeoSpy.this, "Our project", true);
                 dialog.setLayout(new BoxLayout(dialog.getContentPane(), BoxLayout.PAGE_AXIS));
 
                 JLabel pageUrlLab, linksPageToLabel, linksFromPageLabel, externalLinksLabel;
@@ -871,6 +890,7 @@ public class WebSpy extends JFrame {
         logToFile.info("Pop-up menu was set up");
     }
 
+
     private void createConcurrentUpdaterForTable() {
         Thread updater = new Thread() {
             @Override
@@ -890,6 +910,7 @@ public class WebSpy extends JFrame {
         updater.start();
     }
 
+
    private void runSpider(String websiteMainPage) {
         logToFile.info("Running spider...");
         if(spider == null) {
@@ -905,6 +926,7 @@ public class WebSpy extends JFrame {
         spider.scanWithDeque();
     }
 
+
     private class Spider {
         URL startingURL;
         Queue<URL> queue;
@@ -917,117 +939,6 @@ public class WebSpy extends JFrame {
 
             logToFile.info("Spider was initialized.");
         }
-
- /*       public void scanWithSets() {
-            logToFile.info("Scanning website...");
-            System.out.println("Start the program");
-            Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
-            WebClient wc = new WebClient(BrowserVersion.CHROME);
-            HtmlPage parsingPage = null;
-
-
-            wc.getOptions().setRedirectEnabled(false);
-            wc.getOptions().setThrowExceptionOnFailingStatusCode(false);
-            wc.getOptions().setJavaScriptEnabled(false);
-            //wc.getOptions().setThrowExceptionOnScriptError(false);
-
-            List<String> leftPages = new ArrayList<>();
-            Set<String> checkedPages = new HashSet<>();
-            Set<SeoUrl> seoUrlsSet = new HashSet<>();
-
-            String startPage = "https://conditionservice.com.ua/";
-            try {
-                parsingPage = wc.getPage("https://conditionservice.com.ua/");
-            } catch (IOException ex) {
-                logToFile.error(ex.toString());
-                System.out.format("Exception %s%n", ex);
-            }
-
-            String domain = parsingPage.getUrl().getHost();
-
-            leftPages.add(parsingPage.getUrl().toString());
-            TunnerSeoURL tunner = TunnerSeoURL.getTunner();
-            UrlValidator validatorUrl = new UrlValidator();
-
-          while(true){
-              System.out.println("Scanning URL " + parsingPage.getUrl().toString());
-              DomNodeList<HtmlElement> innerLinks = parsingPage.getBody().getElementsByTagName("a");
-              DomNodeList<HtmlElement> innerImages = parsingPage.getBody().getElementsByTagName("img");
-
-              for (HtmlElement el : innerLinks) {
-                  URL potentialUrl = null;
-                  try {
-                        potentialUrl = parsingPage.getFullyQualifiedUrl(el.getAttribute("href"));
-                        System.out.println("Potential (but not URL): " + parsingPage.getFullyQualifiedUrl(el.getAttribute("href")));
-                    } catch (MalformedURLException ex) {
-                      System.out.println(ex.getClass().getName() + ex.getStackTrace());
-                      ex.printStackTrace();
-                    }
-
-                    //if a link to a main page without trailing slash
-                    if((potentialUrl.toString() +"/").equals(startPage) && !checkedPages.contains(potentialUrl.toString())){
-                      checkedPages.add(potentialUrl.toString());
-                      leftPages.remove(potentialUrl.toString());
-                      continue;
-                    }
-
-
-
-                    if(!(validatorUrl.isValid(potentialUrl.toString()))){
-                      System.out.println("Not valid: " + potentialUrl.toString());
-                      continue;
-                    }
-
-                    if(!potentialUrl.getHost().equals(domain)) {
-                    System.out.println("Not equal domain: " + potentialUrl.toString());
-                    continue;
-                    }
-
-                    if(potentialUrl.toString().indexOf('#') != -1){
-                    System.out.println("Index of " + potentialUrl.toString()
-                            .indexOf('#') + " URL is " + potentialUrl.toString());
-                    continue;
-                    }
-
-                    if(! (checkedPages.contains(potentialUrl.toString())) &&
-                        !(leftPages.contains(potentialUrl.toString()))){
-                    System.out.println("Add value: " + potentialUrl.toString());
-                    leftPages.add(potentialUrl.toString());
-                    }
-            }
-
-            SeoUrl newSeoUrl = new SeoUrl(parsingPage.getUrl().toString());
-            tunner.tunne(newSeoUrl, parsingPage);
-            seoUrlsSet.add(newSeoUrl);
-
-            boolean wasAdded = checkedPages.add(parsingPage.getUrl().toString());
-            System.out.println("parsing url was added to checkedPages: " + parsingPage.getUrl().toString() + " " + wasAdded);
-            System.out.println("\ncheckedPage.toString(): " + checkedPages + "\n");
-
-            System.out.println("\nleftPages.toString(): " + leftPages + "\n");
-            boolean isUrlRemoved = leftPages.remove(parsingPage.getUrl().toString());
-            System.out.println("parsing url was removed to leftPage: " + parsingPage.getUrl().toString() + " " + isUrlRemoved);
-            System.out.println("\nleftPages.toString() after deleted: " + leftPages + "\n");
-
-            String newParseUrl = null;
-            if(leftPages.size() != 0)
-                newParseUrl = leftPages.get(0);
-            else break;
-
-              System.out.println("New parse URL is " + newParseUrl);
-            try {
-                parsingPage = wc.getPage(newParseUrl);
-            } catch (IOException ex) {
-                logToFile.error(ex.toString());
-                System.out.println(ex);
-            }
-
-              System.out.println("Size leftPages: " + leftPages.size());
-        }
-
-        //    checkedPages.stream().forEach(System.out::println);
-            logToFile.info("The Website was scanned.");
-        }*/
 
 
        public void scanWithDeque() {
@@ -1205,6 +1116,7 @@ public class WebSpy extends JFrame {
             }
         }
 
+
         private void handleImageFromNotHtmlTagImg(String imageFromTagA, HtmlPage page) {
             SeoEntity seoUrlToImage = new SeoWebImage(imageFromTagA, true);
             SeoEntity.cacheContentTypePages.putIfAbsent(imageFromTagA, validator.getContentType(imageFromTagA));
@@ -1262,13 +1174,14 @@ public class WebSpy extends JFrame {
         }
     }
 
+
     private void ifPausedThenWait() {
         synchronized(lock) {
             while(state == StateSeoSpy.PAUSED) {
                 try {
-                    WebSpy.logToFile.info("Thread for scanning was stopped.");
+                    SeoSpy.logToFile.info("Thread for scanning was stopped.");
                     lock.wait();
-                    WebSpy.logToFile.info("Thread for scanning was woke up.");
+                    SeoSpy.logToFile.info("Thread for scanning was woke up.");
                    // state = StateSeoSpy.RUNNING;
                 } catch(InterruptedException ex) {
                     logToFile.error(ex.toString());
@@ -1280,82 +1193,10 @@ public class WebSpy extends JFrame {
         }
     }
 
+
     private boolean wasStopped() {
         return state == StateSeoSpy.STOPPED;
     }
-}
 
-
-class CustomizedDefaultTableModel extends DefaultTableModel {
-
-    CustomizedDefaultTableModel(Object[][] rows, Object[] columns) {
-        super(rows, columns);
-    }
-
-    @Override
-    public boolean isCellEditable(int row, int column) {
-        return false;
-    }
-
-    @Override
-    public Class getColumnClass(int column) {
-        //for int return Integer, otherwise String
-        switch(column) {
-            case 0:
-            case 3:
-            case 7:
-            case 10:
-            case 11:
-            case 12:
-                return Integer.class;
-            default:
-                return String.class;
-        }
-    }
 
 }
-
-class ObjectDefaultTableCellRenderer extends DefaultTableCellRenderer {
-
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
-        int indexView = table.getRowSorter().convertRowIndexToModel(row);
-        Component cellRendererComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, indexView, column);
-
-        if(isSelected) {
-            return cellRendererComponent;
-        }
-
-        if(table.getModel().getValueAt(indexView, 13).equals("true")) {
-            cellRendererComponent.setBackground(Color.RED);
-        }
-        else {
-            cellRendererComponent.setBackground(Color.WHITE);
-        }
-        return cellRendererComponent;
-    }
-
-}
-
-class IntegerDefaultTableCellRenderer extends DefaultTableCellRenderer {
-
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
-        int indexViewRow = table.getRowSorter().convertRowIndexToModel(row);
-        Component cellRendererComponent = super.getTableCellRendererComponent(table, value, isSelected,hasFocus, indexViewRow, column);
-
-        if (isSelected) {
-            return cellRendererComponent;
-        }
-
-        if(table.getModel().getValueAt(indexViewRow, 13).equals("true")) {
-            cellRendererComponent.setBackground(Color.RED);
-        }
-        else {
-            cellRendererComponent.setBackground(Color.WHITE);
-        }
-        return cellRendererComponent;
-    }
-
-}
-

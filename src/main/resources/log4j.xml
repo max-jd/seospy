@@ -12,7 +12,7 @@
         </layout>
     </appender>
 
-    <logger name="webspy.max_jd.seo.WebSpy">
+    <logger name="seospy.max_jd.seo.SeoSpy">
         <level value="INFO"/>
         <appender-ref ref="Logging"/>
     </logger>

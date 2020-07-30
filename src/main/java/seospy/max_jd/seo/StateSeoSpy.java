@@ -1,4 +1,4 @@
-package webspy.max_jd.seo;
+package seospy.max_jd.seo;
 
 public enum StateSeoSpy {
     NOT_RUN_YET,

@@ -1,6 +1,4 @@
-package webspy.max_jd.utils.interfaces;
-
-import java.io.IOException;
+package seospy.max_jd.seo.util;
 
 @FunctionalInterface
 public interface Routine {

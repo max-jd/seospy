@@ -1,12 +1,12 @@
-package webspy.max_jd.utils;
+package seospy.max_jd.seo.util.serializ.impl;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import webspy.max_jd.seo.SeoUrl;
-import webspy.max_jd.seo.WebSpy;
+import seospy.max_jd.seo.SeoUrl;
+import seospy.max_jd.seo.SeoSpy;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -87,7 +87,7 @@ public class ExcelWriter {
             } catch(IOException ex) {
                 System.out.println(ex.getClass().getName() + ex.getStackTrace());
                 ex.printStackTrace();
-                WebSpy.logToFile.error(ex);
+                SeoSpy.logToFile.error(ex);
             }
         }
 
@@ -96,7 +96,7 @@ public class ExcelWriter {
         } catch(IOException ex) {
             System.out.println(ex.getClass().getName());
             ex.printStackTrace();
-            WebSpy.logToFile.error(ex.toString());
+            SeoSpy.logToFile.error(ex.toString());
         }
 
         try {
@@ -104,7 +104,7 @@ public class ExcelWriter {
         } catch(IOException ex) {
             System.out.println(ex.getClass().getName() + ex.getStackTrace());
             ex.printStackTrace();
-            WebSpy.logToFile.error(ex);
+            SeoSpy.logToFile.error(ex);
         }
     }
 }

@@ -1,4 +1,5 @@
-package webspy.max_jd.seo.entities;
+package seospy.max_jd.seo.entities;
+
 
 import lombok.*;
 
