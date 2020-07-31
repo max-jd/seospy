@@ -1,7 +1,6 @@
 package seospy.max_jd.seo.util.serializ.impl;
 
 import org.apache.commons.lang3.ArrayUtils;
-import seospy.max_jd.seo.SeoUrl;
 import seospy.max_jd.seo.entities.SeoEntity;
 import seospy.max_jd.seo.util.serializ.interfaces.Exporter;
 import seospy.max_jd.seo.util.serializ.interfaces.Loader;
@@ -19,12 +18,12 @@ public class ReadWrite implements Exporter, Loader, Saver {
     private String extensionSave = ".ser";
 
     public void export(Deque<SeoEntity> dequeUrls, Set<SeoEntity> imagesSet, File fileToWrite) {
-        SeoUrl[] arraySeoUrls = new SeoUrl[dequeUrls.size()];
+        SeoEntity[] arraySeoUrls = new SeoEntity[dequeUrls.size()];
         dequeUrls.toArray(arraySeoUrls);
-        SeoUrl[] arraySeoImages = new SeoUrl[imagesSet.size()];
+        SeoEntity[] arraySeoImages = new SeoEntity[imagesSet.size()];
         imagesSet.toArray(arraySeoImages);
 
-        SeoUrl[] joinedSeoArray = ArrayUtils.addAll(arraySeoUrls,arraySeoImages);
+        SeoEntity[] joinedSeoArray = ArrayUtils.addAll(arraySeoUrls,arraySeoImages);
         ExcelWriter.writeToFile(fileToWrite.toPath(), joinedSeoArray);
     }
 

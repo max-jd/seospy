@@ -5,8 +5,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import seospy.max_jd.seo.SeoUrl;
 import seospy.max_jd.seo.SeoSpy;
+import seospy.max_jd.seo.entities.SeoEntity;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class ExcelWriter {
     private static String[] nameColumns = {"#", "URL", "Canonical", "Response", "Title", "Description", "KeyWords", "H1", "Content-Type",
             "Meta-Robots", "Ex. links", "In links", "Out links", "Problem"};
 
-    public static void writeToFile(Path path, SeoUrl[] arraySeoUrls) {
+    public static void writeToFile(Path path, SeoEntity[] arraySeoUrls) {
         System.out.println(path.toString());
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet();
@@ -31,7 +31,7 @@ public class ExcelWriter {
 
         int rowNum = 1;
 
-        for(SeoUrl seoUrl : arraySeoUrls) {
+        for(SeoEntity seoUrl : arraySeoUrls) {
             Row newRow = sheet.createRow(rowNum);
             newRow.createCell(0).setCellValue(rowNum++);
             newRow.createCell(1).setCellValue(seoUrl.getUrl());
@@ -44,10 +44,10 @@ public class ExcelWriter {
             newRow.createCell(8).setCellValue(seoUrl.getContentType());
             newRow.createCell(9).setCellValue(seoUrl.getMetaRobots());
 
-            if(SeoUrl.externalLinks.get(seoUrl.getUrl()) != null) {
-                if(SeoUrl.externalLinks.get(seoUrl.getUrl()).size() != 0) {
+            if(SeoEntity.externalLinks.get(seoUrl.getUrl()) != null) {
+                if(SeoEntity.externalLinks.get(seoUrl.getUrl()).size() != 0) {
                     String columnAllExternalLinks = "";
-                    for(String exLink : SeoUrl.externalLinks.get(seoUrl.getUrl())) {
+                    for(String exLink : SeoEntity.externalLinks.get(seoUrl.getUrl())) {
                         columnAllExternalLinks += exLink + System.lineSeparator();
                     }
                     newRow.createCell(10).setCellValue(columnAllExternalLinks);

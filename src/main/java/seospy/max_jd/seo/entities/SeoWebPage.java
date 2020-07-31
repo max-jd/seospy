@@ -13,7 +13,7 @@ public class SeoWebPage extends SeoEntity {
     @Override
     public void analyzeUrl() {
 
-        if((countH1 != 0) || (response != 200)) {
+        if((countH1 != 1) || (response != 200)) {
             haveSeoProblem = true;
         } else {
             haveSeoProblem = false;

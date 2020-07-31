@@ -3,7 +3,6 @@ package seospy.max_jd.seo.util;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import seospy.max_jd.seo.SeoUrl;
 import seospy.max_jd.seo.entities.SeoEntity;
 
 //Singleton and Director for set up SeOUrls
@@ -105,7 +104,7 @@ public class TunnerSeoUrl {
 
 
         private void setContentType(SeoEntity seoUrl) {
-            seoUrl.setContentType(SeoUrl.cacheContentTypePages.get(seoUrl.toString()));
+            seoUrl.setContentType(SeoEntity.cacheContentTypePages.get(seoUrl.toString()));
         }
 
 }
