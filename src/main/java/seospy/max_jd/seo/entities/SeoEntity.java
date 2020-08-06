@@ -3,6 +3,7 @@ package seospy.max_jd.seo.entities;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,8 +12,7 @@ import java.util.Map;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@EqualsAndHashCode
-abstract public class SeoEntity implements Comparable<SeoEntity> {
+abstract public class SeoEntity implements Comparable<SeoEntity>, Serializable {
 
 
     @NonNull
@@ -34,17 +34,18 @@ abstract public class SeoEntity implements Comparable<SeoEntity> {
     private final boolean isImage;
 
 
+    //collecting information
+    public static Map<String, HashSet<String>>  statisticLinksOn;
+    public static Map<String, HashSet<String>>  statisticLinksOut;
+    public static Map<String, HashSet<String>>  imagesReferredByPages;
+    public static Map<String, HashSet<String>>  externalLinks;
+    public static Map<String, String>           cacheContentTypePages;
+
+
     public SeoEntity(@NonNull String url) {
-       this(url, false);
+        this(url, false);
     }
 
-
-    //collecting information
-    public static Map<String, HashSet<String>> statisticLinksOn;
-    public static Map<String, HashSet<String>> statisticLinksOut;
-    public static Map<String, HashSet<String>> imagesReferredByPages;
-    public static Map<String, HashSet<String>> externalLinks;
-    public static Map<String, String> cacheContentTypePages;
 
     static {
         setNewStatistics();
@@ -81,6 +82,12 @@ abstract public class SeoEntity implements Comparable<SeoEntity> {
 
 
     @Override
+    public int hashCode() {
+        return url.hashCode();
+    }
+
+
+    @Override
     public String toString() {
         return url.toString();
     }
@@ -101,17 +108,17 @@ abstract public class SeoEntity implements Comparable<SeoEntity> {
     }
 
 
+    public Boolean isHaveSeoProblem(){
+        return haveSeoProblem;
+    }
+
+
     private void analysisAsSeoUrl() {
         if((countH1 > 1 | countH1 == 0) || (response != 200)) {
             haveSeoProblem = true;
         } else {
             haveSeoProblem = false;
         }
-    }
-
-
-    public Boolean isHaveSeoProblem(){
-        return haveSeoProblem;
     }
 
 

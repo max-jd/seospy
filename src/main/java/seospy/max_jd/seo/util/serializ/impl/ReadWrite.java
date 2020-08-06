@@ -44,9 +44,6 @@ public class ReadWrite implements Exporter, Loader, Saver {
 
     public void saveTo(Deque<SeoEntity> dequeUrls, Set<SeoEntity> imagesSet, File fileTo) throws IOException, ClassNotFoundException {
 
-       /* if(!fileTo.exists()){
-            fileTo.createNewFile();
-        }*/
         try(FileOutputStream fileOut = new FileOutputStream(fileTo, false);
             ObjectOutputStream objectsOutput = new ObjectOutputStream(fileOut)) {
                 objectsOutput.writeObject(dequeUrls);

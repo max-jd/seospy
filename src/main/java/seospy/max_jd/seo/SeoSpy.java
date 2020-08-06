@@ -323,15 +323,13 @@ public class SeoSpy extends JFrame {
                             try {
                                 Desktop.getDesktop().browse(new URI(url));
                             } catch(URISyntaxException ex) {
-                                System.out.format("%s%n%s", "Oops! Something went wrong!", ex);
                                 JOptionPane.showMessageDialog(SeoSpy.this, "Oops! Cannot open this link!",
                                         "Error: URISyntaxException" , JOptionPane.ERROR_MESSAGE);
-                                SeoSpy.logToFile.error(ex.toString());
+                                SeoSpy.logToFile.error(getClass() + " " + ex.toString());
                             } catch(IOException ex) {
                                 JOptionPane.showMessageDialog(SeoSpy.this, "Oops! Cannot open this link!",
                                         "Error: IOException", JOptionPane.ERROR_MESSAGE);
-                                System.out.format("%s%n%s", "Oops! Something went wrong!", ex);
-                                SeoSpy.logToFile.error(ex.toString());
+                                SeoSpy.logToFile.error(getClass() + " " + ex.toString());
                             }
                         }
                     }
@@ -548,7 +546,7 @@ public class SeoSpy extends JFrame {
                                     .getSystemClipboard().getData(DataFlavor.stringFlavor),
                             null);
                 } catch(IOException | UnsupportedFlavorException | BadLocationException ex){
-                    logToFile.error(ex);
+                    logToFile.error(getClass() + " " + ex.toString());
                 }
             }
         };
@@ -690,7 +688,7 @@ public class SeoSpy extends JFrame {
 
     private void loadProject() {
         logToFile.info("Loading project");
-        JFileChooser chooser = new JFileChooser(System.getProperty("user.home"));
+        JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
         chooser.setFileFilter(
                 new FileNameExtensionFilter(rw.getExtensionForLoad(), rw.getExtensionForLoad().replaceFirst(".", "")));
         chooser.setDialogTitle("Load from");
@@ -704,9 +702,7 @@ public class SeoSpy extends JFrame {
                 RoutineWorker newRoutineWorker = new RoutineWorker(loadProjectRoutine);
                 showModalDialogProgress(newRoutineWorker);
             } catch(Exception ex) {
-                logToFile.error(ex.toString());
-                System.out.println(ex.getClass().getName() + ex.getStackTrace());
-                ex.printStackTrace();
+                logToFile.error(getClass() + " " + ex.toString());
             }
             saveProjectItem.setEnabled(true);
         }
@@ -739,8 +735,7 @@ public class SeoSpy extends JFrame {
                 RoutineWorker newRoutineWorker = new RoutineWorker(saveProjectRoutine);
                 showModalDialogProgress(newRoutineWorker);
             } catch(Exception ex) {
-                logToFile.error(ex.toString());
-                System.out.println(ex);
+                logToFile.error(getClass() + " " + ex.toString());
             }
             logToFile.info("Project was saved.");
         }
@@ -756,7 +751,7 @@ public class SeoSpy extends JFrame {
         exLinksMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                JDialog dialog = new JDialog(SeoSpy.this, "Our project", true);
+                JDialog dialog = new JDialog(SeoSpy.this, "URL properties", true);
                 dialog.setLayout(new BoxLayout(dialog.getContentPane(), BoxLayout.PAGE_AXIS));
 
                 JLabel pageUrlLab, linksPageToLabel, linksFromPageLabel, externalLinksLabel;
@@ -851,13 +846,9 @@ public class SeoSpy extends JFrame {
                 try {
                     Desktop.getDesktop().browse(new URI(url));
                 } catch(java.net.URISyntaxException ex) {
-                    logToFile.error(ex.toString());
-                    System.out.println(ex.getClass().getName() + ex.getStackTrace());
-                    ex.printStackTrace();
+                    logToFile.error(getClass() + " " + ex.toString());
                 } catch(java.io.IOException ex) {
-                    logToFile.error(ex.toString());
-                    System.out.println(ex.getClass().getName() + ex.getStackTrace());
-                    ex.printStackTrace();
+                    logToFile.error(getClass() + " " + ex.toString());
                 }
             }
         });
@@ -871,11 +862,9 @@ public class SeoSpy extends JFrame {
                 try {
                     Desktop.getDesktop().browse(new URI(url));
                 } catch(java.net.URISyntaxException ex) {
-                    logToFile.error(ex.toString());
-                    System.out.println(ex.getClass().getName() + ex.getStackTrace());
-                    ex.printStackTrace();
+                    logToFile.error(getClass() + " " + ex.toString());
                 } catch(java.io.IOException ex) {
-                    logToFile.error(ex.toString());
+                    logToFile.error(getClass() + " " + ex.toString());
                     System.out.println(ex.getClass().getName() + ex.getStackTrace());
                     ex.printStackTrace();
                 }
@@ -900,9 +889,7 @@ public class SeoSpy extends JFrame {
                     try {
                         Thread.sleep(3000);
                     } catch(InterruptedException ex) {
-                        System.out.println(ex.getClass().getName() + ex.getStackTrace());
-                        ex.printStackTrace();
-                        logToFile.info(ex.toString());
+                        logToFile.info(getClass() + " " + ex.toString());
                     }
                 }
             }
@@ -917,9 +904,7 @@ public class SeoSpy extends JFrame {
             try {
                 spider = new Spider(new URL(websiteMainPage));
             } catch(java.net.MalformedURLException ex) {
-                logToFile.error(ex.toString());
-                System.out.println(ex.getClass().getName() + ex.getStackTrace());
-                ex.printStackTrace();
+                logToFile.error(getClass() + " " + ex.toString());
             }
         }
         logToFile.info("Start scanning.");
@@ -1076,9 +1061,7 @@ public class SeoSpy extends JFrame {
                                     }
                                 } while (true);
                             } catch(IOException ex) {
-                                logToFile.error(ex.toString());
-                                System.out.println(ex.getClass().getName() + ex.getStackTrace());
-                                ex.printStackTrace();
+                                logToFile.error(getClass() + " " + ex.toString());
                             }
                             state = StateSeoSpy.SCANNING_ENDED;
                             wc.close();
@@ -1155,8 +1138,7 @@ public class SeoSpy extends JFrame {
                     setOfImage.add(qualifiedUrl);
                     SeoEntity.cacheContentTypePages.putIfAbsent(qualifiedUrl, validator.getContentType(qualifiedUrl));
                 } catch(MalformedURLException ex){
-                    System.out.println(ex.getClass().getName() + ex.getStackTrace());
-                    ex.printStackTrace();
+                    logToFile.error(getClass() + " " + ex.toString());
                 }
             }
 
@@ -1184,9 +1166,7 @@ public class SeoSpy extends JFrame {
                     SeoSpy.logToFile.info("Thread for scanning was woke up.");
                    // state = StateSeoSpy.RUNNING;
                 } catch(InterruptedException ex) {
-                    logToFile.error(ex.toString());
-                    System.out.println(ex.getClass().getName() + ex.getStackTrace());
-                    ex.printStackTrace();
+                    logToFile.error(getClass() + " " + ex.toString());
                 }
             }
 

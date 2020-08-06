@@ -27,9 +27,7 @@ public class SeoUrlValidator extends UrlValidator {
         try {
             urlHost = new URL(host);
         } catch(MalformedURLException ex) {
-            SeoSpy.logToFile.error(ex.toString());
-            System.out.println(ex.getClass().getName() + ex.getStackTrace());
-            ex.printStackTrace();
+            SeoSpy.logToFile.error(getClass() + " " + ex.toString());
         }
         return url.getHost().equals(urlHost.getHost());
     }
@@ -66,13 +64,9 @@ public class SeoUrlValidator extends UrlValidator {
             connection.connect();
             contentType = connection.getContentType();
         } catch(MalformedURLException ex) {
-            SeoSpy.logToFile.error(ex.toString());
-            System.out.println(ex.getClass().getName() + ex.getStackTrace());
-            ex.printStackTrace();
+            SeoSpy.logToFile.error(getClass() + " " + ex.toString());
         } catch(IOException ex) {
-            System.out.println(ex.getClass().getName() + ex.getStackTrace());
-            ex.printStackTrace();
-            SeoSpy.logToFile.error(ex);
+            SeoSpy.logToFile.error(getClass() + " " + ex.toString());
         }
          return contentType.toLowerCase();
     }

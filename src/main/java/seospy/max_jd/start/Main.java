@@ -9,9 +9,7 @@ public class Main {
         try{
             thread.join();
         }catch(InterruptedException ex){
-            System.out.println(ex.getClass().getName() + ex.getStackTrace());
-            ex.printStackTrace();
-            SeoSpy.logToFile.error(ex);
+            SeoSpy.logToFile.error(Main.class + " " + ex.toString());
         }
     }
 }

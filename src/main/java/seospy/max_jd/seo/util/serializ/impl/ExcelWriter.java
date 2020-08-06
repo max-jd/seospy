@@ -85,26 +85,20 @@ public class ExcelWriter {
             try {
                 Files.createFile(path);
             } catch(IOException ex) {
-                System.out.println(ex.getClass().getName() + ex.getStackTrace());
-                ex.printStackTrace();
-                SeoSpy.logToFile.error(ex);
+                SeoSpy.logToFile.error(ExcelWriter.class + " " + ex.toString());
             }
         }
 
         try(FileOutputStream fileOut = new FileOutputStream(path.toString())) {
             workbook.write(fileOut);
         } catch(IOException ex) {
-            System.out.println(ex.getClass().getName());
-            ex.printStackTrace();
-            SeoSpy.logToFile.error(ex.toString());
+            SeoSpy.logToFile.error(ExcelWriter.class + " " + ex.toString());
         }
 
         try {
             workbook.close();
         } catch(IOException ex) {
-            System.out.println(ex.getClass().getName() + ex.getStackTrace());
-            ex.printStackTrace();
-            SeoSpy.logToFile.error(ex);
+            SeoSpy.logToFile.error(ExcelWriter.class + " " + ex.toString());
         }
     }
 }

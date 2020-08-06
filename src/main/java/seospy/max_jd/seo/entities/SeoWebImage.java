@@ -1,8 +1,5 @@
 package seospy.max_jd.seo.entities;
 
-import lombok.Getter;
-
-
 public class SeoWebImage extends SeoEntity {
 
 
