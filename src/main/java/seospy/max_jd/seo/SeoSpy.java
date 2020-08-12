@@ -604,9 +604,10 @@ public class SeoSpy extends JFrame {
             }
         });
 
-        this.setPreferredSize(new Dimension(800, 800));
-        this.setLocationRelativeTo(null);
+
+        this.setPreferredSize(new Dimension(800, 600));
         this.pack();
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
 
         logToFile.info("GUI was initialized.");
@@ -887,7 +888,7 @@ public class SeoSpy extends JFrame {
                 while(state == StateSeoSpy.RUNNING) {
                     SwingUtilities.invokeLater(() -> updateTable());
                     try {
-                        Thread.sleep(3000);
+                        Thread.sleep(2000);
                     } catch(InterruptedException ex) {
                         logToFile.info(getClass() + " " + ex.toString());
                     }
@@ -932,18 +933,16 @@ public class SeoSpy extends JFrame {
                 SwingWorker sw = new SwingWorker() {
                     @Override
                     protected Void doInBackground() {
-                        // if program have been paused and was pressed the play button - waking up thread for continue scanning
+                       /* // if program have been paused and was pressed the play button - waking up thread for continue scanning
                         if(state == StateSeoSpy.PAUSED) {
                             state = StateSeoSpy.RUNNING;
+                            //notify thread for scanning
                             synchronized(lock) {
                                 lock.notify();
                             }
                             createConcurrentUpdaterForTable();
-                        }  else { //else start scanning
+                        }  else { //else start scanning*/
                             state = StateSeoSpy.RUNNING;
-
-                            //Create a thread for updating table
-                            createConcurrentUpdaterForTable();
 
                             System.out.println("Start the program");
                             Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
@@ -960,6 +959,10 @@ public class SeoSpy extends JFrame {
                                 SeoEntity.statisticLinksOut.put(parsingHtmlPage.getUrl().toString(), new HashSet<String>());
                                 SeoEntity.cacheContentTypePages.put(parsingHtmlPage.getUrl().toString(), validator.getContentType(parsingHtmlPage.getUrl().toString()));
                                 System.out.println(parsingHtmlPage.getUrl().toString());
+
+                                //Create a thread for updating table
+                                createConcurrentUpdaterForTable();
+
                                 do {
                                     spider.handleImages(parsingHtmlPage);
 
@@ -1065,7 +1068,8 @@ public class SeoSpy extends JFrame {
                             }
                             state = StateSeoSpy.SCANNING_ENDED;
                             wc.close();
-                        }
+                   /*     }//end else*/
+                        System.out.println("Scanning was ended.");
                         return null;
                     }
                     @Override
@@ -1092,6 +1096,7 @@ public class SeoSpy extends JFrame {
                         synchronized(lock) {
                             state = StateSeoSpy.RUNNING;
                             lock.notify();
+                            createConcurrentUpdaterForTable();
                         }
                     }
                 };
@@ -1164,7 +1169,6 @@ public class SeoSpy extends JFrame {
                     SeoSpy.logToFile.info("Thread for scanning was stopped.");
                     lock.wait();
                     SeoSpy.logToFile.info("Thread for scanning was woke up.");
-                   // state = StateSeoSpy.RUNNING;
                 } catch(InterruptedException ex) {
                     logToFile.error(getClass() + " " + ex.toString());
                 }
