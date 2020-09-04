@@ -5,8 +5,8 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 //Builder
 @Getter
@@ -16,17 +16,17 @@ abstract public class SeoEntity implements Comparable<SeoEntity>, Serializable {
 
 
     @NonNull
-    protected final String  url;
-    protected String        canonical;
-    protected int           response;
-    protected String        title;
-    protected String        description;
-    protected String        keywords;
-    protected int           countH1;
-    protected String        metaRobots;
-    protected String        contentType;
+    protected final String url;
+    protected String canonical;
+    protected int response;
+    protected String title;
+    protected String description;
+    protected String keywords;
+    protected int countH1;
+    protected String metaRobots;
+    protected String contentType;
 
-    protected Boolean       haveSeoProblem;
+    protected Boolean haveSeoProblem;
 
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
@@ -35,11 +35,11 @@ abstract public class SeoEntity implements Comparable<SeoEntity>, Serializable {
 
 
     //collecting information
-    public static Map<String, HashSet<String>>  statisticLinksOn;
-    public static Map<String, HashSet<String>>  statisticLinksOut;
-    public static Map<String, HashSet<String>>  imagesReferredByPages;
-    public static Map<String, HashSet<String>>  externalLinks;
-    public static Map<String, String>           cacheContentTypePages;
+    public static Map<String, Set<String>> statisticLinksOn;
+    public static Map<String, Set<String>> statisticLinksOut;
+    public static Map<String, Set<String>> imagesReferredByPages;
+    public static Map<String, Set<String>> externalLinks;
+    public static Map<String, String> cacheContentTypePages;
 
 
     public SeoEntity(@NonNull String url) {
@@ -53,11 +53,11 @@ abstract public class SeoEntity implements Comparable<SeoEntity>, Serializable {
 
 
     public static void setNewStatistics() {
-        statisticLinksOn = new HashMap<String, HashSet<String>>();
-        statisticLinksOut = new HashMap<String, HashSet<String>>();
-        externalLinks = new HashMap<String, HashSet<String>>();
+        statisticLinksOn = new HashMap<String, Set<String>>();
+        statisticLinksOut = new HashMap<String, Set<String>>();
+        externalLinks = new HashMap<String, Set<String>>();
         cacheContentTypePages = new HashMap<String, String>();
-        imagesReferredByPages = new HashMap<String, HashSet<String>>();
+        imagesReferredByPages = new HashMap<String, Set<String>>();
     }
 
 
@@ -66,10 +66,10 @@ abstract public class SeoEntity implements Comparable<SeoEntity>, Serializable {
     }
 
     @Override
-    public boolean equals(Object other){
+    public boolean equals(Object other) {
         if (other == null) return false;
-        if(other == this) return true;
-        if(!(other instanceof SeoEntity))return false;
+        if (other == this) return true;
+        if (!(other instanceof SeoEntity)) return false;
         SeoEntity otherSeoUrl = (SeoEntity) other;
         return otherSeoUrl.url.equals(this.url);
     }
@@ -94,27 +94,19 @@ abstract public class SeoEntity implements Comparable<SeoEntity>, Serializable {
 
 
     abstract public void analyzeUrl();
-      /*  if(isImage) {
-            analysisAsImage();
-            return;
-        }
-        analysisAsSeoUrl();
-    }*/
-
 
     private void analysisAsImage() {
-        if(this.response != 200) haveSeoProblem = true;
-        else  haveSeoProblem = false;
+        if (this.response != 200) haveSeoProblem = true;
+        else haveSeoProblem = false;
     }
 
-
-    public Boolean isHaveSeoProblem(){
+    public Boolean isHaveSeoProblem() {
         return haveSeoProblem;
     }
 
 
     private void analysisAsSeoUrl() {
-        if((countH1 > 1 | countH1 == 0) || (response != 200)) {
+        if ((countH1 > 1 | countH1 == 0) || (response != 200)) {
             haveSeoProblem = true;
         } else {
             haveSeoProblem = false;

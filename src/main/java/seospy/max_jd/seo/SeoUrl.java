@@ -15,17 +15,17 @@ import java.util.Map;
 @EqualsAndHashCode
 public class SeoUrl implements Comparable<SeoUrl>, Serializable {
     @NonNull
-    private final String  url;
-    private String        canonical;
-    private int           response;
-    private String        title;
-    private String        description;
-    private String        keywords;
-    private int           countH1;
-    private String        metaRobots;
-    private String        contentType;
+    private final String url;
+    private String canonical;
+    private int response;
+    private String title;
+    private String description;
+    private String keywords;
+    private int countH1;
+    private String metaRobots;
+    private String contentType;
 
-    private Boolean       haveSeoProblem;
+    private Boolean haveSeoProblem;
     @NonNull
     private final boolean isImage;
 
@@ -65,7 +65,7 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable {
     }
 
     public void analyzeURL() {
-        if(isImage) {
+        if (isImage) {
             analysisAsImage();
             return;
         }
@@ -73,12 +73,12 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable {
     }
 
     private void analysisAsImage() {
-        if(this.response != 200) haveSeoProblem = true;
-        else  haveSeoProblem = false;
+        if (this.response != 200) haveSeoProblem = true;
+        else haveSeoProblem = false;
     }
 
     private void analysisAsSeoUrl() {
-        if((countH1 > 1 | countH1 == 0) || (response != 200)) {
+        if ((countH1 > 1 | countH1 == 0) || (response != 200)) {
             haveSeoProblem = true;
         } else {
             haveSeoProblem = false;
@@ -89,7 +89,7 @@ public class SeoUrl implements Comparable<SeoUrl>, Serializable {
         return isImage;
     }
 
-    public Boolean isHaveSeoProblem( ){
+    public Boolean isHaveSeoProblem() {
         return haveSeoProblem;
     }
 

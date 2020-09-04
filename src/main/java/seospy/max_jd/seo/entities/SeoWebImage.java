@@ -3,7 +3,7 @@ package seospy.max_jd.seo.entities;
 public class SeoWebImage extends SeoEntity {
 
 
-   public SeoWebImage(String url, boolean image) {
+    public SeoWebImage(String url, boolean image) {
 
         super(url, image);
 
@@ -13,8 +13,8 @@ public class SeoWebImage extends SeoEntity {
     @Override
     public void analyzeUrl() {
 
-        if(this.response != 200) haveSeoProblem = true;
-        else  haveSeoProblem = false;
+        if (this.response != 200) haveSeoProblem = true;
+        else haveSeoProblem = false;
 
     }
 
@@ -22,7 +22,7 @@ public class SeoWebImage extends SeoEntity {
     @Override
     public boolean equals(Object another) {
 
-        if(super.equals(another)) {
+        if (super.equals(another)) {
             return another instanceof SeoWebImage;
         }
 

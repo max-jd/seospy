@@ -24,14 +24,14 @@ public class ExcelWriter {
         Sheet sheet = workbook.createSheet();
         Row headerRow = sheet.createRow(0);
 
-        for(int i = 0; i < nameColumns.length; i++) {
+        for (int i = 0; i < nameColumns.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(nameColumns[i]);
         }
 
         int rowNum = 1;
 
-        for(SeoEntity seoUrl : arraySeoUrls) {
+        for (SeoEntity seoUrl : arraySeoUrls) {
             Row newRow = sheet.createRow(rowNum);
             newRow.createCell(0).setCellValue(rowNum++);
             newRow.createCell(1).setCellValue(seoUrl.getUrl());
@@ -44,10 +44,10 @@ public class ExcelWriter {
             newRow.createCell(8).setCellValue(seoUrl.getContentType());
             newRow.createCell(9).setCellValue(seoUrl.getMetaRobots());
 
-            if(SeoEntity.externalLinks.get(seoUrl.getUrl()) != null) {
-                if(SeoEntity.externalLinks.get(seoUrl.getUrl()).size() != 0) {
+            if (SeoEntity.externalLinks.get(seoUrl.getUrl()) != null) {
+                if (SeoEntity.externalLinks.get(seoUrl.getUrl()).size() != 0) {
                     String columnAllExternalLinks = "";
-                    for(String exLink : SeoEntity.externalLinks.get(seoUrl.getUrl())) {
+                    for (String exLink : SeoEntity.externalLinks.get(seoUrl.getUrl())) {
                         columnAllExternalLinks += exLink + System.lineSeparator();
                     }
                     newRow.createCell(10).setCellValue(columnAllExternalLinks);
@@ -61,43 +61,43 @@ public class ExcelWriter {
             String allLinksOn = Arrays.toString(seoUrl.statisticLinksOn.get(seoUrl.getUrl()).toArray());
             //it is maximum length defined by "Excel specifications and limits" https://support.office.com/en-us/article/excel-specifications-and-limits-1672b34d-7043-467e-8e27-269d656771c3
             //delete a right square brace ] or set the maximum length of cell contents (text) is 32,767 characters
-            int sizeAllLinksOn = allLinksOn.length() > 32_767 ? 32_676 : allLinksOn.length()-1;
+            int sizeAllLinksOn = allLinksOn.length() > 32_767 ? 32_676 : allLinksOn.length() - 1;
             //at 0 index a left square brace - delete it
             newRow.createCell(11).setCellValue(allLinksOn.substring(1, sizeAllLinksOn));
 
-            if(seoUrl.statisticLinksOut.get(seoUrl.getUrl())!= null) {
+            if (seoUrl.statisticLinksOut.get(seoUrl.getUrl()) != null) {
                 String allLinksOut = Arrays.toString(seoUrl.statisticLinksOut.get(seoUrl.getUrl()).toArray());
                 //it is maximum length defined by "Excel specifications and limits" https://support.office.com/en-us/article/excel-specifications-and-limits-1672b34d-7043-467e-8e27-269d656771c3
                 //delete right square braces ] or set the maximum length of cell contents (text) is 32,767 characters
-                int lenthAllLinksOut = allLinksOut.length() > 32_767 ? 32_676 : allLinksOut.length()-1;
+                int lenthAllLinksOut = allLinksOut.length() > 32_767 ? 32_676 : allLinksOut.length() - 1;
                 newRow.createCell(12).setCellValue(allLinksOut.substring(1, lenthAllLinksOut));
-            }else {
+            } else {
                 newRow.createCell(12).setCellValue("");
             }
             newRow.createCell(13).setCellValue(seoUrl.isHaveSeoProblem());
         }
 
-        for(int i = 0; i > nameColumns.length; i++) {
+        for (int i = 0; i > nameColumns.length; i++) {
             sheet.autoSizeColumn(i);
         }
 
-        if(!(Files.exists(path))) {
+        if (!(Files.exists(path))) {
             try {
                 Files.createFile(path);
-            } catch(IOException ex) {
+            } catch (IOException ex) {
                 SeoSpy.logToFile.error(ExcelWriter.class + " " + ex.toString());
             }
         }
 
-        try(FileOutputStream fileOut = new FileOutputStream(path.toString())) {
+        try (FileOutputStream fileOut = new FileOutputStream(path.toString())) {
             workbook.write(fileOut);
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             SeoSpy.logToFile.error(ExcelWriter.class + " " + ex.toString());
         }
 
         try {
             workbook.close();
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             SeoSpy.logToFile.error(ExcelWriter.class + " " + ex.toString());
         }
     }

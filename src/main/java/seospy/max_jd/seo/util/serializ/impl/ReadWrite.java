@@ -8,7 +8,6 @@ import seospy.max_jd.seo.util.serializ.interfaces.Saver;
 
 import java.io.*;
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,37 +22,37 @@ public class ReadWrite implements Exporter, Loader, Saver {
         SeoEntity[] arraySeoImages = new SeoEntity[imagesSet.size()];
         imagesSet.toArray(arraySeoImages);
 
-        SeoEntity[] joinedSeoArray = ArrayUtils.addAll(arraySeoUrls,arraySeoImages);
+        SeoEntity[] joinedSeoArray = ArrayUtils.addAll(arraySeoUrls, arraySeoImages);
         ExcelWriter.writeToFile(fileToWrite.toPath(), joinedSeoArray);
     }
 
     public void loadFrom(Deque<SeoEntity> dequeUrls, Set<SeoEntity> imagesSet, File fileFrom) throws IOException, ClassNotFoundException {
-        try(FileInputStream fileInputStream = new FileInputStream(fileFrom);
-            ObjectInputStream inStreamOb = new ObjectInputStream(fileInputStream)) {
+        try (FileInputStream fileInputStream = new FileInputStream(fileFrom);
+             ObjectInputStream inStreamOb = new ObjectInputStream(fileInputStream)) {
 
-            Deque<SeoEntity> tempCopyDeque = (Deque)inStreamOb.readObject();
+            Deque<SeoEntity> tempCopyDeque = (Deque) inStreamOb.readObject();
             dequeUrls.addAll(tempCopyDeque);
             Set<SeoEntity> tempCopySet = (Set<SeoEntity>) inStreamOb.readObject();
             imagesSet.addAll(tempCopySet);
-            SeoEntity.statisticLinksOn = (Map<String, HashSet<String>>) inStreamOb.readObject();
-            SeoEntity.statisticLinksOut = (Map<String, HashSet<String>>)inStreamOb.readObject();
-            SeoEntity.externalLinks = (Map<String, HashSet<String>>) inStreamOb.readObject();
-            SeoEntity.cacheContentTypePages = (Map<String,String>) inStreamOb.readObject();
+            SeoEntity.statisticLinksOn = (Map<String, Set<String>>) inStreamOb.readObject();
+            SeoEntity.statisticLinksOut = (Map<String, Set<String>>) inStreamOb.readObject();
+            SeoEntity.externalLinks = (Map<String, Set<String>>) inStreamOb.readObject();
+            SeoEntity.cacheContentTypePages = (Map<String, String>) inStreamOb.readObject();
         }
     }
 
     public void saveTo(Deque<SeoEntity> dequeUrls, Set<SeoEntity> imagesSet, File fileTo) throws IOException, ClassNotFoundException {
 
-        try(FileOutputStream fileOut = new FileOutputStream(fileTo, false);
-            ObjectOutputStream objectsOutput = new ObjectOutputStream(fileOut)) {
-                objectsOutput.writeObject(dequeUrls);
-                objectsOutput.writeObject(imagesSet);
-                objectsOutput.writeObject(SeoEntity.statisticLinksOn);
-                objectsOutput.writeObject(SeoEntity.statisticLinksOut);
-                objectsOutput.writeObject(SeoEntity.externalLinks);
-                objectsOutput.writeObject(SeoEntity.cacheContentTypePages);
-            }
+        try (FileOutputStream fileOut = new FileOutputStream(fileTo, false);
+             ObjectOutputStream objectsOutput = new ObjectOutputStream(fileOut)) {
+            objectsOutput.writeObject(dequeUrls);
+            objectsOutput.writeObject(imagesSet);
+            objectsOutput.writeObject(SeoEntity.statisticLinksOn);
+            objectsOutput.writeObject(SeoEntity.statisticLinksOut);
+            objectsOutput.writeObject(SeoEntity.externalLinks);
+            objectsOutput.writeObject(SeoEntity.cacheContentTypePages);
         }
+    }
 
     public String getExtensionExport() {
         return extensionExport;

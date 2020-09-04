@@ -4,7 +4,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class CustomizedDefaultTableModel extends DefaultTableModel {
 
-   public CustomizedDefaultTableModel(Object[][] rows, Object[] columns) {
+    public CustomizedDefaultTableModel(Object[][] rows, Object[] columns) {
         super(rows, columns);
     }
 
@@ -16,7 +16,7 @@ public class CustomizedDefaultTableModel extends DefaultTableModel {
     @Override
     public Class getColumnClass(int column) {
         //for int return Integer, otherwise String
-        switch(column) {
+        switch (column) {
             case 0:
             case 3:
             case 7:

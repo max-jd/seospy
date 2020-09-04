@@ -14,19 +14,17 @@ public class SeoUrlValidator extends UrlValidator {
     private String host;
 
 
-
     public SeoUrlValidator(String host, String[] schemes, long options) {
         super(schemes, options);
         this.host = host;
     }
 
 
-
     public boolean isSameHost(URL url) {
         URL urlHost = null;
         try {
             urlHost = new URL(host);
-        } catch(MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             SeoSpy.logToFile.error(getClass() + " " + ex.toString());
         }
         return url.getHost().equals(urlHost.getHost());
@@ -37,19 +35,16 @@ public class SeoUrlValidator extends UrlValidator {
     }
 
 
-
     public boolean isImage(String url) {
         String lowerCase = url.toLowerCase();
-        return  lowerCase.endsWith(".png") || lowerCase.endsWith(".jpg") ||
+        return lowerCase.endsWith(".png") || lowerCase.endsWith(".jpg") ||
                 lowerCase.endsWith(".gif") || lowerCase.endsWith((".jpeg"));
     }
-
 
 
     public boolean isSchemeHttpOrHttps(String url) {
         return url.startsWith("http");
     }
-
 
 
     public String getContentType(String url) {
@@ -63,12 +58,12 @@ public class SeoUrlValidator extends UrlValidator {
             connection.setRequestMethod("HEAD");
             connection.connect();
             contentType = connection.getContentType();
-        } catch(MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             SeoSpy.logToFile.error(getClass() + " " + ex.toString());
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             SeoSpy.logToFile.error(getClass() + " " + ex.toString());
         }
-         return contentType.toLowerCase();
+        return contentType.toLowerCase();
     }
 
 

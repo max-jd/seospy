@@ -13,7 +13,7 @@ public class SeoWebPage extends SeoEntity {
     @Override
     public void analyzeUrl() {
 
-        if((countH1 != 1) || (response != 200)) {
+        if ((countH1 != 1) || (response != 200)) {
             haveSeoProblem = true;
         } else {
             haveSeoProblem = false;
@@ -25,7 +25,7 @@ public class SeoWebPage extends SeoEntity {
     @Override
     public boolean equals(Object another) {
 
-        if(super.equals(another)) {
+        if (super.equals(another)) {
             return another instanceof SeoWebPage;
         }
 
